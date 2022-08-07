@@ -116,29 +116,63 @@ fn print_person(person: Option<Person>) {
     println!("{}", per);
 }
 
-fn question(old_string: String, number: i32, question: String) -> Option<String> {
-    println!("[{}] {}: {}", number, question, old_string);
+fn question(old_string: Option<String>, number: i32, question: String) -> Option<String> {
+    match old_string{
+        None =>  println!("[{}] {}:", number, question),
+        Some(z) =>  println!("[{}] {}: {}", number, question, z),
+    }
     let mut line: String = String::new();
-    let _ = std::io::stdin().read_line(&mut line).unwrap();
-    line.pop();
-    if line.is_empty() { return None; }
-    else{ return Some(line.clone()); }
+    let n = std::io::stdin().read_line(&mut line).unwrap();
+    if n <= 1 { return None; }
+    else{ 
+        line.pop();
+        return Some(line.clone());
+    }
+}
+
+fn ask_for_changes(mut p: Person) -> (Person, bool) {
+    let mut line: String = String::new();
+    println!("for changes type the number you want to change, else press enter");
+    let n = std::io::stdin().read_line(&mut line).unwrap();
+    
+    if n <= 1 {
+        return (p, true);
+    } else if n >= 3 {
+        line.pop();
+        println!("{} is not a valid number", line);
+        return (p, false);
+    }else{
+        match line.chars().next() {
+            None => return (p, false),
+            Some('1') => p.vorname = question(p.vorname, 1, "Vorname".to_string()),
+            Some('2') => p.zweitname = question(p.zweitname, 2, "Zweitname".to_string()),
+            Some('3') => p.nachname = question(p.nachname, 3, "Nachname".to_string()),
+            Some('4') => p.geburtsname = question(p.geburtsname, 4, "Geburtsname".to_string()),
+            Some('5') => p.geburtstag = question(p.geburtstag, 5, "Geburtstag".to_string()),
+            Some(_) => {
+                line.pop();
+                println!("{} is not a valid number", line);
+            },
+        }
+        return (p, false);
+    }
 }
 
 fn create_new_person() -> Option<Person>{
     let mut new_person: Person = Person::new();
     
-    new_person.vorname = question("".to_string(), 1, "Vorname".to_string());
-    new_person.zweitname = question("".to_string(), 2, "Zweitname".to_string());
-    new_person.nachname = question("".to_string(), 3, "Nachname".to_string());
-    new_person.geburtsname = question("".to_string(), 4, "Geburtsname".to_string());
-    new_person.geburtstag = question("".to_string(), 5, "Geburtstag".to_string());
+    new_person.vorname = question(None, 1, "Vorname".to_string());
+    new_person.zweitname = question(None, 2, "Zweitname".to_string());
+    new_person.nachname = question(None, 3, "Nachname".to_string());
+    new_person.geburtsname = question(None, 4, "Geburtsname".to_string());
+    new_person.geburtstag = question(None, 5, "Geburtstag".to_string());
 
-    println!("Newly created Person:");
-    print_person(Some(new_person.clone()));
-    println!("for changes type the number you want to change, else type y");
-
-    // feature to change value if number is typed or go on and return if y is typed
+    let mut boo: bool = false;
+    while boo == false{
+        println!("\n\nNewly created Person:");
+        print_person(Some(new_person.clone()));
+        (new_person, boo) = ask_for_changes(new_person.clone());
+    }
 
     return Some(new_person);
 }
