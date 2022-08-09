@@ -4,7 +4,9 @@ extern crate mysql;
 extern crate lazy_static;
 use std::env;
 mod print;
+mod db;
 
+#[allow(dead_code)]
 fn print_type_of<T>(_: &T) {
     println!("{}", std::any::type_name::<T>())
 }
@@ -32,30 +34,30 @@ impl Person {
             todestag: Some(String::new()),
         };
     }
-}
-
-lazy_static! {
-    static ref POOL : mysql::Pool = mysql::Pool::new("mysql://root:Gravure1247@localhost:3306/person").unwrap();
-}
-
-fn get_all_persons() -> Vec<Person>{
-
-    return POOL.prep_exec("SELECT * from person", ())
-        .map(|result| {
-            result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, geburtstag, todestag) = mysql::from_row(row);
-
-                Person {
-                    person_id,
-                    vorname,
-                    zweitname,
-                    nachname,
-                    geburtsname,
-                    geburtstag,
-                    todestag,
-                }
-            }).collect()
-        }).unwrap(); // Unwrap `Vec<Person>`
+    pub fn vorname(&mut self, vorname: Option<String>) -> &mut Self {
+        self.vorname = vorname;
+        self
+    }
+    pub fn zweitname(&mut self, zweitname: Option<String>) -> &mut Self {
+        self.zweitname = zweitname;
+        self
+    }
+    pub fn nachname(&mut self, nachname: Option<String>) -> &mut Self {
+        self.nachname = nachname;
+        self
+    }
+    pub fn geburtsname(&mut self, geburtsname: Option<String>) -> &mut Self {
+        self.geburtsname = geburtsname;
+        self
+    }
+    pub fn geburtstag(&mut self, geburtstag: Option<String>) -> &mut Self {
+        self.geburtstag = geburtstag;
+        self
+    }
+    pub fn todestag(&mut self, todestag: Option<String>) -> &mut Self {
+        self.todestag = todestag;
+        self
+    }
 }
 
 fn question(old_string: Option<String>, number: i32, question: String) -> Option<String> {
@@ -72,245 +74,166 @@ fn question(old_string: Option<String>, number: i32, question: String) -> Option
     }
 }
 
-fn ask_for_changes(mut p: Person) -> (Person, bool) {
+fn ask_for_changes(mut p: Option<Person>) -> (Option<Person>, bool) {
     let mut line: String = String::new();
     println!("for changes type the number you want to change, else press enter");
     let n = std::io::stdin().read_line(&mut line).unwrap();
-    
     if n <= 1 {
-        return (p, true);
+        return (p, false);
     } else if n >= 3 {
         line.pop();
         println!("{} is not a valid number", line);
-        return (p, false);
+        return (p, true);
     }else{
         match line.chars().next() {
-            None => return (p, false),
-            Some('1') => p.vorname = question(p.vorname, 1, "Vorname".to_string()),
-            Some('2') => p.zweitname = question(p.zweitname, 2, "Zweitname".to_string()),
-            Some('3') => p.nachname = question(p.nachname, 3, "Nachname".to_string()),
-            Some('4') => p.geburtsname = question(p.geburtsname, 4, "Geburtsname".to_string()),
-            Some('5') => p.geburtstag = question(p.geburtstag, 5, "Geburtstag".to_string()),
-            Some('6') => p.todestag = question(p.todestag, 6, "Todestag".to_string()),
+            None => return (p, true),
+            Some('1') => {
+                match p{
+                    None => {},
+                    Some(ref mut z) => z.vorname = question(z.vorname.clone(), 1, "Vorname".to_string()),
+                }
+            },
+            Some('2') => {
+                match p{
+                    None => {},
+                    Some(ref mut z) => z.zweitname = question(z.zweitname.clone(), 2, "Zweitname".to_string()),
+                }
+            },
+            Some('3') => {
+                match p{
+                    None => {},
+                    Some(ref mut z) => z.nachname = question(z.nachname.clone(), 3, "Nachname".to_string()),
+                }
+            },
+            Some('4') => {
+                match p{
+                    None => {},
+                    Some(ref mut z) => z.geburtsname = question(z.geburtsname.clone(), 4, "Geburtsname".to_string()),
+                }
+            },
+            Some('5') => {
+                match p{
+                    None => {},
+                    Some(ref mut z) => z.geburtstag = question(z.geburtstag.clone(), 5, "Geburtstag".to_string()),
+                }
+            },
+            Some('6') => {
+                match p{
+                    None => {},
+                    Some(ref mut z) => z.todestag = question(z.todestag.clone(), 6, "Todestag".to_string()),
+                }
+            },
             Some(_) => {
                 line.pop();
                 println!("{} is not a valid number", line);
             },
         }
-        return (p, false);
+        return (p, true);
     }
 }
 
 fn create_new_person() -> Option<Person>{
-    let mut new_person: Person = Person::new();
-    
-    new_person.vorname = question(None, 1, "Vorname".to_string());
-    new_person.zweitname = question(None, 2, "Zweitname".to_string());
-    new_person.nachname = question(None, 3, "Nachname".to_string());
-    new_person.geburtsname = question(None, 4, "Geburtsname".to_string());
-    new_person.geburtstag = question(None, 5, "Geburtstag".to_string());
-    new_person.todestag = question(None, 6, "Todestag".to_string());
+    let mut new_person: Option<Person> = Some(Person::new());
 
-    let mut boo: bool = false;
-    while boo == false{
+    new_person.clone().map(|mut s| { 
+        s.vorname( question(None, 1, "Vorname".to_string())); 
+        s.zweitname( question(None, 2, "Zweitname".to_string()));
+        s.nachname( question(None, 3, "Nachname".to_string()));
+        s.geburtsname( question(None, 4, "Geburtsname".to_string()));
+        s.geburtstag( question(None, 5, "Geburtstag".to_string()));
+        s.todestag( question(None, 6, "Todestag".to_string()));
+        s});
+
+    let mut boo: bool = true;
+    while boo{
         println!("\n\nNewly created Person:");
-        print::print_person(Some(new_person.clone()));
+        print::print_person(new_person.clone());
         (new_person, boo) = ask_for_changes(new_person.clone());
     }
-
-    return Some(new_person);
+    return new_person;
 }
 
-#[allow(unused_must_use)]
-fn insert_new_person(person: Option<Person>){
-    match person {
-        None => println!("No person found"),
-        Some(person) => {
-            let mut insert: String = String::from("INSERT INTO person (vorname, zweitname, nachname, geburtsname, geburtstag, todestag) VALUES (\"");
-
-            match person.vorname {
-                None => insert.push_str(""),
-                Some(z) => insert.push_str(&z),
-            }
-            insert.push_str("\", \"");
-            match person.zweitname {
-                None => insert.push_str(""),
-                Some(z) => insert.push_str(&z),
-            }
-            insert.push_str("\", \"");
-            match person.nachname {
-                None => insert.push_str(""),
-                Some(z) => insert.push_str(&z),
-            }
-            insert.push_str("\", \"");
-            match person.geburtsname {
-                None => insert.push_str(""),
-                Some(z) => insert.push_str(&z),
-            }
-            insert.push_str("\", \"");
-            match person.geburtstag {
-                None => insert.push_str(""),
-                Some(z) => insert.push_str(&z),
-            }
-            insert.push_str("\", \"");
-            match person.todestag {
-                None => insert.push_str(""),
-                Some(z) => insert.push_str(&z),
-            }
-            insert.push_str("\");");
-            
-            POOL.prep_exec(insert, ());
-        },
-    };
-
-}
-
-fn name_to_result(name: String) -> Vec<Person>{
-    let mut selec: String = String::from("SELECT * from person where vorname like '%");
-    selec.push_str(&name);
-    selec.push_str("%';");
-
-    return POOL.prep_exec(selec, ())
-        .map(|result| {
-            result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, geburtstag, todestag) = mysql::from_row(row);
-
-                Person {
-                    person_id,
-                    vorname,
-                    zweitname,
-                    nachname,
-                    geburtsname,
-                    geburtstag,
-                    todestag,
-                }
-            }).collect()
-        }).unwrap();
-}
-
-fn id_to_result(id: i32) -> Vec<Person>{
-    let mut selec: String = String::from("SELECT * from person where person_id = ");
-    selec.push_str(&id.to_string());
-    selec.push(';');
-
-    return POOL.prep_exec(selec, ())
-        .map(|result| {
-            result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, geburtstag, todestag) = mysql::from_row(row);
-
-                Person {
-                    person_id,
-                    vorname,
-                    zweitname,
-                    nachname,
-                    geburtsname,
-                    geburtstag,
-                    todestag,
-                }
-            }).collect()
-        }).unwrap();
-}
-
-
-
-fn mixed_To_single(line: String, mode: i32) -> String{ // 0 -> ABC, 1 -> 123
-    let mut retString: String = String::new();
+fn mixed_to_single(line: String, mode: i32) -> String{ // 0 -> ABC, 1 -> 123
+    let mut ret_string: String = String::new();
     for i in 0..line.len() {
         match line.chars().nth(i) {
             None => {},
             Some(a) => {
                 if a.is_whitespace() { 
-                    return retString; 
+                    return ret_string; 
                 }else if mode == 0 {
-                    if a.is_alphabetic() { retString.push(a); }
-                    else { return retString; }
+                    if a.is_alphabetic() { ret_string.push(a); }
+                    else { return ret_string; }
                 }else if mode == 1 {
-                    if a.is_numeric() { retString.push(a); }
-                    else { return retString; }
+                    if a.is_numeric() { ret_string.push(a); }
+                    else { return ret_string; }
                 }
             },
         }
     }
-    return retString; 
+    return ret_string; 
 }
 
-fn search_person(){ // -> Option<Person> {
-
-    let mut boo: bool = false;
+fn search_person() -> Option<Person> {
+    let mut boo: bool = true;
     let mut results: Vec<Person>;
-    while boo == false{
+    let mut search_person: Option<Person> = None;
+    while boo{
         let mut line: String = String::new();
         println!("Who do you want to update? Please enter the First Name or thr Id");
-        let _n = std::io::stdin().read_line(&mut line).unwrap();
+        let _ = std::io::stdin().read_line(&mut line).unwrap();
         line.pop();
-
         match line.chars().next() {
-            Some(z) if z.is_numeric() => { // One can onlyx esacpe this loop by typing a number/Id 
-                let a: i32 = mixed_To_single(line.clone(), 1).parse::<i32>().unwrap();
-                println!("{}", a);
-
-                // weiter zu print person with id and then update that person (check if ist a valid number)
-                if a > 0 {
-                    results = id_to_result(a);
-                    if results.len() < 1 {
-                        println!("there is nobody with that id, please try again");
-                    }else{
-                
-                        print::print_vector_person_names(results);
-
+            Some(z) if z.is_numeric() => { // One can onlyx esacpe this loop by typing a Number/Id 
+                let id: i32 = mixed_to_single(line.clone(), 1).parse::<i32>().unwrap();
+                if id > 0 {
+                    results = db::id_to_result(id);
+                    if results.len() < 1 {  println!("there is nobody with that id, please try again"); }
+                    else {
+                        print::print_person_names(Some(results[0].clone()));
                         line.clear();
                         println!("Is that the correct person? Press enter if true or any key if false");
-                        let _n = std::io::stdin().read_line(&mut line).unwrap();
+                        let _ = std::io::stdin().read_line(&mut line).unwrap();
                         line.pop();
-
                         match line.chars().next() {
-                        None => {
-                            println!("go on");
-                            boo = true;
-                        },
-                        Some(_) => {},
+                            None => {
+                                search_person = Some(results[0].clone());
+                                boo = false;
+                            },
+                            Some(_) => {},
                         }
                     }
                 }
             },
             Some(z) if z.is_alphabetic() => {
-                let a: String = mixed_To_single(line, 0);
-                //println!("{}", a);
-                results = name_to_result(a);
-                if results.len() < 1 {
-                    println!("there is nobody with that name, please try again");
-                }else{
-            
-                    print::print_vector_person_names(results);
-            
-                    // println!("Who do you want to update? Please enter the Number or an new first name");
-            
-                    // let mut line2: String = String::new();
-                    // let _n = std::io::stdin().read_line(&mut line2).unwrap();
-                    // line2.pop();
-                }
+                let name: String = mixed_to_single(line, 0);
+                results = db::name_to_result(name);
+                if results.len() < 1 { println!("there is nobody with that name, please try again"); }
+                else{ print::print_vector_person_names(results); }
             },
             _ => {},     
         }
-
     }
-
-    
-    // abfragen was jetzt eingegeben wurde und dann weiter machen 
-
-
+    return search_person;
 }
 
 fn main(){
-
     let args: Vec<_> = env::args().collect();
     let mut update: bool = false;
     if args.len() > 1 {
         if args.len() > 2 && args[2] == "-u" { update = true; }
         match args[1].as_str() {
             "-c" => {
-                if update { search_person(); }
-                else { insert_new_person(create_new_person()); }
+                if update { 
+                    let mut p: Option<Person> = search_person(); 
+                    let mut boo: bool = true;
+                    while boo{
+                        print::print_person(p.clone());
+                        (p, boo) = ask_for_changes(p.clone());
+                    }
+                    db::update_person(p.clone());
+                }
+                else { db::insert_person(create_new_person()); }
             },
             "-p" => {
                 if update { println!("TODO update a parent - parent - child relationship"); }
@@ -321,7 +244,7 @@ fn main(){
                 else { println!("TODO create a marriage relationship"); }
             },
             "-s" => {
-                print::print_vector_person(get_all_persons());
+                print::print_vector_person(db::get_all_persons());
                 println!("TODO search after persons");
             }
             "-h" => {
@@ -334,7 +257,6 @@ fn main(){
 
     // let p1: Option<Person> = create_new_person();
     // print_person(p1);
-
     // Person{
     //     person_id: -1, 
     //     vorname: Some("Peter".to_string()), 
@@ -344,21 +266,12 @@ fn main(){
     //     geburtstag: Some("01.01.2000".to_string()),
     //     todestag: None,
     // };
-
     // let p: Option<Person> = create_new_person();
-
-    // insert_new_person(p);
-
+    // insert_person(p);
     // let all: Vec<Person> = get_all_persons();
-
     // print_vector_person(all);
-
     //print_person(Some(all[0].clone()));
-
 }
-
-
-
 
 /* Usage:
 cargo run 
