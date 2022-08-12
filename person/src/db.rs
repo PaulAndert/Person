@@ -1,4 +1,5 @@
-use crate::Person;
+use super::person::Person;
+//use super::parent::Parent;
 
 lazy_static! { static ref POOL : mysql::Pool = mysql::Pool::new("mysql://root:Gravure1247@localhost:3306/person").unwrap(); }
 
@@ -111,8 +112,10 @@ pub fn update_person(person: Option<Person>){
 }
 
 #[allow(unused_must_use)]
-pub fn name_to_result(name: String) -> Vec<Person>{
+pub fn single_name_person(name: String) -> Vec<Person>{
     let mut selec: String = String::from("SELECT * from person where vorname like '%");
+    selec.push_str(&name);
+    selec.push_str("%' or nachname = '%;");
     selec.push_str(&name);
     selec.push_str("%';");
 
@@ -134,8 +137,33 @@ pub fn name_to_result(name: String) -> Vec<Person>{
         }).unwrap();
 }
 
+pub fn double_name_person(a: String, b: String) -> Vec<Person>{
+    let mut selec: String = String::from("SELECT * from person where vorname like '%");
+    selec.push_str(&a);
+    selec.push_str("%' or nachname = '%;");
+    selec.push_str(&b);
+    selec.push_str("%';");
+
+    return POOL.prep_exec(selec, ())
+        .map(|result| {
+            result.map(|x| x.unwrap()).map(|row| {
+                let (person_id, vorname, zweitname, nachname, geburtsname, geburtstag, todestag) = mysql::from_row(row);
+
+                Person {
+                    person_id,
+                    vorname,
+                    zweitname,
+                    nachname,
+                    geburtsname,
+                    geburtstag,
+                    todestag,
+                }
+            }).collect()
+        }).unwrap();
+}
+
 #[allow(unused_must_use)]
-pub fn id_to_result(id: i32) -> Vec<Person>{
+pub fn id_person(id: i32) -> Vec<Person>{
     let mut selec: String = String::from("SELECT * from person where person_id = ");
     selec.push_str(&id.to_string());
     selec.push(';');
