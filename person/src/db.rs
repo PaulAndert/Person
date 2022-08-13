@@ -1,5 +1,5 @@
 use super::person::Person;
-//use super::parent::Parent;
+use super::relation::Relation;
 
 lazy_static! { static ref POOL : mysql::Pool = mysql::Pool::new("mysql://root:Gravure1247@localhost:3306/person").unwrap(); }
 
@@ -61,7 +61,10 @@ pub fn insert_person(person: Option<Person>){
             }
             insert.push_str("\");");
             
-            POOL.prep_exec(insert, ());
+            match POOL.prep_exec(insert, ()) {
+                Ok(_) => {},
+                Err(z) => println!("{}", z),
+            }
         },
     };
 }
@@ -106,7 +109,10 @@ pub fn update_person(person: Option<Person>){
             update.push_str(&person.person_id.to_string());
             update.push_str(";");
             
-            POOL.prep_exec(update, ());
+            match POOL.prep_exec(update, ()) {
+                Ok(_) => {},
+                Err(z) => println!("{}", z),
+            }
         },
     };
 }
@@ -163,11 +169,10 @@ pub fn double_name_person(a: String, b: String) -> Vec<Person>{
 }
 
 #[allow(unused_must_use)]
-pub fn id_person(id: i32) -> Vec<Person>{
+pub fn id_to_person(id: i32) -> Vec<Person>{
     let mut selec: String = String::from("SELECT * from person where person_id = ");
     selec.push_str(&id.to_string());
     selec.push(';');
-
     return POOL.prep_exec(selec, ())
         .map(|result| {
             result.map(|x| x.unwrap()).map(|row| {
@@ -184,4 +189,57 @@ pub fn id_person(id: i32) -> Vec<Person>{
                 }
             }).collect()
         }).unwrap();
+}
+
+// Parent
+
+#[allow(unused_must_use)]
+pub fn insert_relation(relation: Option<Relation>){
+    match relation {
+        None => println!("No relation found"),
+        Some(relation) => {
+            let mut insert: String = String::from("INSERT INTO relation (");
+            let mut rows: String = String::new();
+            let mut values: String = String::new();
+            match relation.male {
+                None => {},
+                Some(z) => {
+                    rows.push_str("male_id,");
+                    values.push_str(&z.person_id.to_string());
+                    values.push(',');
+                },
+            }
+            match relation.female {
+                None => {},
+                Some(z) => {
+                    rows.push_str("female_id,"); 
+                    values.push_str(&z.person_id.to_string());
+                    values.push(',');
+                },
+            }
+            match relation.child {
+                None => {},
+                Some(z) => {
+                    rows.push_str("child_id,"); 
+                    values.push_str(&z.person_id.to_string());
+                    values.push(',');
+                },
+            }
+            if !rows.is_empty(){ 
+                rows.pop();
+                values.pop();
+
+                insert.push_str(&rows);
+                insert.push_str(") values (");
+                insert.push_str(&values);
+                insert.push_str(");");
+
+                //println!("{}", insert.clone());
+                match POOL.prep_exec(insert, ()) {
+                    Ok(_) => {},
+                    Err(z) => println!("{}", z),
+                }
+            }
+        },
+    };
 }

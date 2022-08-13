@@ -4,7 +4,7 @@ extern crate lazy_static;
 use std::env;
 
 pub mod person;
-pub mod parent;
+pub mod relation;
 pub mod db;
 
 #[allow(dead_code)]
@@ -52,12 +52,9 @@ fn main(){
                 }
                 else { db::insert_person(person::create()); }
             },
-            "-p" => {
-                if update { println!("TODO update a parent - parent - child relationship"); }
-                else { 
-                    let p: Option<parent::Parent> = parent::create();
-                    parent::print(p);
-                }
+            "-r" => {
+                if update { println!("TODO update a relation"); }
+                else { db::insert_relation(relation::create()) }
             },
             "-m" => {
                 if update { println!("TODO update a marriage relationship"); }
@@ -95,7 +92,7 @@ fn main(){
 /* Usage:
 cargo run 
     -c : create a new person -> all 6 parameter
-    -p : create a new parent - parent - child relationship
+    -r : create a new relation
     -m : create a new marriage relationship
     -u : update a given thing (only in combination with another mode)
     -s : search a person

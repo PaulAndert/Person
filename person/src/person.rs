@@ -157,7 +157,7 @@ pub fn search() -> Option<Person> {
                 let(a, _) = mixed_to_single(line.clone(), 1);
                 let id: i32 = a.parse::<i32>().unwrap();
                 if id > 0 {
-                    results = id_person(id);
+                    results = id_to_person(id);
                     if results.len() < 1 {  println!("there is nobody with that id, please try again"); }
                     else {
                         print_names(Some(results[0].clone()));

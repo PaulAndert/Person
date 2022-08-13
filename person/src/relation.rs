@@ -1,29 +1,23 @@
 use super::person::*;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
-pub struct Parent {
-	pub male_id: i32,
+pub struct Relation {
     pub male: Option<Person>,
-    pub female_id: i32,
     pub female: Option<Person>,
-    pub child_id: i32,
     pub child: Option<Person>,
 } 
 
-impl Parent {
-    fn new () -> Parent {
-        return Parent{
-            male_id: -1,
+impl Relation {
+    fn new () -> Relation {
+        return Relation{
             male: None,
-            female_id: -1,
             female: None,
-            child_id: -1,
             child: None,
         };
     }
 }
 
-pub fn change(mut p: Option<Parent>) -> (Option<Parent>, bool) {
+pub fn change(mut p: Option<Relation>) -> (Option<Relation>, bool) {
     let mut line: String = String::new();
     println!("for changes type the number you want to change, else press enter");
     let n = std::io::stdin().read_line(&mut line).unwrap();
@@ -63,40 +57,58 @@ pub fn change(mut p: Option<Parent>) -> (Option<Parent>, bool) {
     }
 }
 
-pub fn create() -> Option<Parent>{
-    let mut new_parent: Option<Parent> = Some(Parent::new());
+fn check(relation: Option<Relation>) -> bool{
+    match relation{
+        None => return false,
+        Some(z) => {
+            let mut cnt: i32 = 0;
+            if z.male.is_some() { cnt += 1 }
+            if z.female.is_some() { cnt += 1 }
+            if z.child.is_some() { cnt += 1 }
+            if cnt >= 2 { return true }
+            else{ return false }
+        }
+    }
+}
+
+pub fn create() -> Option<Relation>{
+    let mut new_relation: Option<Relation> = Some(Relation::new());
 
     let mut boo: bool = true;
     while boo{
-        println!("\n\nNewly created Parent relationship:");
-        print(new_parent.clone());
-        (new_parent, boo) = change(new_parent.clone());
+        println!("\n\nNewly created Relation:");
+        print(new_relation.clone());
+        (new_relation, boo) = change(new_relation.clone());
+        if !boo && !check(new_relation.clone()) {
+            println!("!! You need at least 2 persons for a relation");
+            boo = true;
+        }
     }
-    return new_parent;
+    return new_relation;
 }
 
-pub fn print(parent: Option<Parent>) {
+pub fn print(relation: Option<Relation>) {
     let mut per : String = String::new();
-    match parent {
-        None => per.push_str("No parent relationship found"),
-        Some(parent) => {
+    match relation {
+        None => per.push_str("No relation found"),
+        Some(relation) => {
             
-            per.push_str("[1] Father: ");
-            match &parent.male {
+            per.push_str("[1] Male: ");
+            match &relation.male {
                 None => per.push_str("--"),
-                Some(_) => per.push_str(&get_person_names(parent.male)),
+                Some(_) => per.push_str(&get_person_names(relation.male)),
             };
 
-            per.push_str("\n[2] Mother: ");
-            match &parent.female {
+            per.push_str("\n[2] Female: ");
+            match &relation.female {
                 None => per.push_str("--"),
-                Some(_) => per.push_str(&get_person_names(parent.female)),
+                Some(_) => per.push_str(&get_person_names(relation.female)),
             };
 
             per.push_str("\n[3] Child: ");
-            match &parent.child {
+            match &relation.child {
                 None => per.push_str("--"),
-                Some(_) => per.push_str(&get_person_names(parent.child)),
+                Some(_) => per.push_str(&get_person_names(relation.child)),
             };
         },
     }
