@@ -1,4 +1,4 @@
-use super::person::*;
+use crate::Person;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Relation {
@@ -33,19 +33,19 @@ pub fn change(mut p: Option<Relation>) -> (Option<Relation>, bool) {
             Some('1') => {
                 match p{
                     None => {},
-                    Some(ref mut z) => z.male = search(),
+                    Some(ref mut z) => z.male = crate::person::search(),
                 }
             },
             Some('2') => {
                 match p{
                     None => {},
-                    Some(ref mut z) => z.female = search(),
+                    Some(ref mut z) => z.female = crate::person::search(),
                 }
             },
             Some('3') => {
                 match p{
                     None => {},
-                    Some(ref mut z) => z.child = search(),
+                    Some(ref mut z) => z.child = crate::person::search(),
                 }
             },
             Some(_) => {
@@ -96,21 +96,76 @@ pub fn print(relation: Option<Relation>) {
             per.push_str("[1] Male: ");
             match &relation.male {
                 None => per.push_str("--"),
-                Some(_) => per.push_str(&get_person_names(relation.male)),
+                Some(_) => per.push_str(&crate::person::get_person_names(relation.male)),
             };
 
             per.push_str("\n[2] Female: ");
             match &relation.female {
                 None => per.push_str("--"),
-                Some(_) => per.push_str(&get_person_names(relation.female)),
+                Some(_) => per.push_str(&crate::person::get_person_names(relation.female)),
             };
 
             per.push_str("\n[3] Child: ");
             match &relation.child {
                 None => per.push_str("--"),
-                Some(_) => per.push_str(&get_person_names(relation.child)),
+                Some(_) => per.push_str(&crate::person::get_person_names(relation.child)),
             };
         },
     }
     println!("{}", per);
 }
+
+pub fn search() -> Option<Relation> {
+    let mut results: Vec<Relation>;
+    loop {
+        println!("Please enter a person who is in that relation (until there is only one relation left)");
+        results = crate::db::person_to_relations(crate::person::search());
+        if results.clone().len() == 1 { return Some(results[0].clone()) }
+        else{ crate::relation::print_vector(results) }
+    }
+}
+
+pub fn print_vector(all: Vec<Relation>) {
+    let mut cnt: i32 = 0;
+    for relation in all.iter() {
+        cnt += 1;
+        println!("Relation no. {}", cnt);
+        print(Some(relation.clone()));
+    }
+}
+
+/* 
+pub fn print(relation: Option<Relation>) {
+    let mut per : String = String::new();
+    match relation {
+        None => per.push_str("No relation found"),
+        Some(relation) => {
+            per.push_str("Male: ");
+            match relation.male {
+                None => per.push_str("--"),
+                Some(z) => {
+                    if z.is_empty() { per.push_str("--"); }
+                    else { per.push_str(z) }
+                },
+            };
+            per.push_str("\nFemale: ");
+            match relation.female {
+                None => per.push_str("--"),
+                Some(z) => {
+                    if z.is_empty() { per.push_str("--"); }
+                    else { per.push_str(z) }
+                },
+            };
+            per.push_str("\nChild: ");
+            match relation.child {
+                None => per.push_str("--"),
+                Some(z) => {
+                    if z.is_empty() { per.push_str("--"); }
+                    else { per.push_str(z) }
+                },
+            };
+        },
+    }
+    println!("{}", per);
+}
+*/

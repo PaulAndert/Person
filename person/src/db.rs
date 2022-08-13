@@ -1,5 +1,5 @@
-use super::person::Person;
-use super::relation::Relation;
+use crate::Person;
+use crate::Relation;
 
 lazy_static! { static ref POOL : mysql::Pool = mysql::Pool::new("mysql://root:Gravure1247@localhost:3306/person").unwrap(); }
 
@@ -242,4 +242,97 @@ pub fn insert_relation(relation: Option<Relation>){
             }
         },
     };
+}
+
+pub fn update_relation(original: Option<Relation>, updated: Option<Relation>) {
+    match updated {
+        None => println!("No relation found"),
+        Some(up) => {
+            let mut update: String = String::from("UPDATE relation SET male_id = ");
+
+            match up.male {
+                None => update.push_str("null"),
+                Some(z) => update.push_str(&z.person_id.to_string()),
+            }
+            update.push_str(", female_id = ");
+            match up.female {
+                None => update.push_str("null"),
+                Some(z) => update.push_str(&z.person_id.to_string()),
+            }
+            update.push_str(", child_id = ");
+            match up.child {
+                None => update.push_str("null"),
+                Some(z) => update.push_str(&z.person_id.to_string()),
+            }
+            update.push_str(" WHERE male_id = ");
+            match original {
+                None => println!("No relation found"),
+                Some(ori) => {
+                    match ori.male {
+                        None => update.push_str("null"),
+                        Some(z) => update.push_str(&z.person_id.to_string()),
+                    }
+                    update.push_str(" and female_id = ");
+                    match ori.female {
+                        None => update.push_str("null"),
+                        Some(z) => update.push_str(&z.person_id.to_string()),
+                    }
+                    update.push_str(" and child_id = ");
+                    match ori.child {
+                        None => update.push_str("null"),
+                        Some(z) => update.push_str(&z.person_id.to_string()),
+                    }
+                    update.push_str(";");
+                    println!("{}", update.clone());
+                    match POOL.prep_exec(update, ()) {
+                        Ok(_) => {},
+                        Err(z) => println!("{}", z),
+                    }
+                },
+            }
+        },
+    };
+}
+
+pub fn person_to_relations(person: Option<Person>) -> Vec<Relation> {
+    let mut selec: String = String::from("SELECT * from relation where male_id = ");
+ 
+    match person {
+        None => {},
+        Some(z) => {
+            selec.push_str(&z.person_id.to_string());
+            selec.push_str(" or female_id = ");
+            selec.push_str(&z.person_id.to_string());
+            selec.push_str(" or child_id = ");
+            selec.push_str(&z.person_id.to_string());
+            selec.push_str(";");
+        }
+    }
+    return POOL.prep_exec(selec, ())
+        .map(|result| {
+            result.map(|x| x.unwrap()).map(|row| {
+                let (male_id, female_id, child_id) = mysql::from_row::<(Option<i32>, Option<i32>, Option<i32>)>(row);
+
+                Relation {
+                    male: {
+                        match male_id{
+                            None => { None },
+                            Some(z) => { Some(id_to_person(z)[0].clone()) }
+                        }
+                    },
+                    female: {
+                        match female_id{
+                            None => { None },
+                            Some(z) => { Some(id_to_person(z)[0].clone()) }
+                        }
+                    },
+                    child: {
+                        match child_id{
+                            None => { None },
+                            Some(z) => { Some(id_to_person(z)[0].clone()) }
+                        }
+                    },
+                }
+            }).collect()
+        }).unwrap();
 }

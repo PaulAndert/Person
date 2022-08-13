@@ -7,6 +7,9 @@ pub mod person;
 pub mod relation;
 pub mod db;
 
+use crate::person::Person;
+use crate::relation::Relation;
+
 #[allow(dead_code)]
 fn print_type_of<T>(_: &T) {
     println!("{}", std::any::type_name::<T>())
@@ -42,23 +45,26 @@ fn main(){
         match args[1].as_str() {
             "-c" => {
                 if update { 
-                    let mut p: Option<person::Person> = person::search(); 
+                    let mut p: Option<Person> = person::search(); 
                     let mut boo: bool = true;
                     while boo{
                         person::print(p.clone());
                         (p, boo) = person::change(p.clone());
                     }
                     db::update_person(p.clone());
-                }
-                else { db::insert_person(person::create()); }
+                }else { db::insert_person(person::create()); }
             },
             "-r" => {
-                if update { println!("TODO update a relation"); }
-                else { db::insert_relation(relation::create()) }
-            },
-            "-m" => {
-                if update { println!("TODO update a marriage relationship"); }
-                else { println!("TODO create a marriage relationship"); }
+                if update { 
+                    let original: Option<Relation> = relation::search();
+                    let mut update: Option<Relation> = original.clone();
+                    let mut boo: bool = true;
+                    while boo{
+                        relation::print(update.clone());
+                        (update, boo) = relation::change(update.clone());
+                    }
+                    db::update_relation(original.clone(), update.clone());
+                }else { db::insert_relation(relation::create()) }
             },
             "-s" => {
                 person::print(person::search());
@@ -93,7 +99,6 @@ fn main(){
 cargo run 
     -c : create a new person -> all 6 parameter
     -r : create a new relation
-    -m : create a new marriage relationship
     -u : update a given thing (only in combination with another mode)
     -s : search a person
     -h : help -> shows this and / or more

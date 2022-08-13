@@ -1,5 +1,5 @@
-use super::db::*;
-use crate::mixed_to_single;
+// use super::db::*;
+// use crate::mixed_to_single;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Person {
@@ -154,10 +154,10 @@ pub fn search() -> Option<Person> {
         line.pop();
         match line.chars().next() {
             Some(z) if z.is_numeric() => { // One can only esacpe this loop by typing a Number/Id 
-                let(a, _) = mixed_to_single(line.clone(), 1);
+                let(a, _) = crate::mixed_to_single(line.clone(), 1);
                 let id: i32 = a.parse::<i32>().unwrap();
                 if id > 0 {
-                    results = id_to_person(id);
+                    results = crate::db::id_to_person(id);
                     if results.len() < 1 {  println!("there is nobody with that id, please try again"); }
                     else {
                         print_names(Some(results[0].clone()));
@@ -176,10 +176,10 @@ pub fn search() -> Option<Person> {
                 }
             },
             Some(z) if z.is_alphabetic() => {
-                let (a, b) = mixed_to_single(line, 0);
+                let (a, b) = crate::mixed_to_single(line, 0);
                 match b{
-                    None => results = single_name_person(a),
-                    Some(z) => results = double_name_person(a, z),
+                    None => results = crate::db::single_name_person(a),
+                    Some(z) => results = crate::db::double_name_person(a, z),
                 }
                 if results.len() < 1 { println!("there is nobody with that name, please try again"); }
                 else{ print_vector_names(results); }
