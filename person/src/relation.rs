@@ -133,39 +133,3 @@ pub fn print_vector(all: Vec<Relation>) {
         print(Some(relation.clone()));
     }
 }
-
-/* 
-pub fn print(relation: Option<Relation>) {
-    let mut per : String = String::new();
-    match relation {
-        None => per.push_str("No relation found"),
-        Some(relation) => {
-            per.push_str("Male: ");
-            match relation.male {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-            per.push_str("\nFemale: ");
-            match relation.female {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-            per.push_str("\nChild: ");
-            match relation.child {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-        },
-    }
-    println!("{}", per);
-}
-*/

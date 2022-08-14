@@ -277,31 +277,7 @@ pub fn get_person_names(person: Option<Person>) -> String{
             per.push_str(&person.person_id.to_string());
             per.push_str("] ");
 
-            match &person.vorname {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-
-            per.push(' ');
-            match &person.zweitname {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-
-            per.push(' ');
-            match &person.nachname {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
+            per.push_str(&vor_zweit_nach(Some(person.clone())));
             match &person.geburtsname {
                 Some(z) => {
                     if !z.is_empty() {  
@@ -318,3 +294,39 @@ pub fn get_person_names(person: Option<Person>) -> String{
 }
 
 pub fn print_names(person: Option<Person>){ println!("{}", get_person_names(person)); }
+
+pub fn vor_zweit_nach(person: Option<Person>) -> String{
+    let mut per : String = String::new();
+    match person {
+        None => per.push_str("No person found"),
+        Some(person) => {
+        
+            match &person.vorname {
+                None => per.push_str("--"),
+                Some(z) => {
+                    if z.is_empty() { per.push_str("--"); }
+                    else { per.push_str(z) }
+                },
+            };
+            match &person.zweitname {
+                None => {},
+                Some(z) => {
+                    if !z.is_empty() { 
+                        per.push(' ');
+                        per.push_str(z);
+                    }
+                },
+            };
+
+            per.push(' ');
+            match &person.nachname {
+                None => per.push_str("--"),
+                Some(z) => {
+                    if z.is_empty() { per.push_str("--"); }
+                    else { per.push_str(z) }
+                },
+            };
+        },
+    }
+    return per;
+}

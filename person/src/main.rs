@@ -2,6 +2,7 @@ extern crate mysql;
 #[macro_use]
 extern crate lazy_static;
 use std::env;
+use std::io::Write;
 
 pub mod person;
 pub mod relation;
@@ -37,12 +38,77 @@ fn mixed_to_single(line: String, mode: i32) -> (String, Option<String> ){ // 0 -
     else { return (first, Some(second)) }
 }
 
+fn get_all_nodes() -> String{
+    let mut ret: String = String::new();
+    let net = Some(db::id_to_person(3)[0].clone());
+    let rela: Relation = db::person_to_relations(net)[0].clone();
+
+    match rela.male{
+        None => {},
+        Some(z) => { 
+            ret.push_str("male [shape=square, label=\"");
+            ret.push_str(&person::vor_zweit_nach(Some(z.clone())));
+            ret.push_str("\n");
+            match z.geburtstag{ 
+                None => {},
+                Some(y) => {ret.push_str(&y)},
+            }
+            ret.push_str("\",color=\"blue\", pos=\"0,2!\"];\n");
+        },
+    }
+
+    match rela.female{
+        None => {},
+        Some(z) => { 
+            ret.push_str("female [shape=circle, label=\"");
+            ret.push_str(&person::vor_zweit_nach(Some(z.clone())));
+            ret.push_str("\n");
+            match z.geburtstag{ 
+                None => {},
+                Some(y) => {ret.push_str(&y)},
+            }
+            ret.push_str("\",color=\"pink\", pos=\"2,2!\"];\n");
+        },
+    }
+    match rela.child{
+        None => {},
+        Some(z) => { 
+            ret.push_str("child [shape=square, label=\"");
+            ret.push_str(&person::vor_zweit_nach(Some(z.clone())));
+            ret.push_str("\n");
+            match z.geburtstag{ 
+                None => {},
+                Some(y) => {ret.push_str(&y)},
+            }
+            ret.push_str("\",color=\"blue\", pos=\"1,0!\"];\n");
+        },
+    }
+
+    ret.push_str("t01 [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"0,1!\"];\nt11 [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"1,1!\"];\nt21 [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"2,1!\"];\n");
+    ret.push_str("male -> t01\nfemale -> t21\nt01 -> t11 -> t21\nt11 -> child\n");
+
+    return ret;
+}
+
+fn graph(){
+    let gra: String = String::from("digraph P {\nedge [dir=none];\nnode [shape=box];\n");
+
+    let mut file = std::fs::File::create("data.dot").expect("create failed");
+
+    file.write_all(gra.as_bytes()).expect("write failed");
+    file.write_all(get_all_nodes().as_bytes()).expect("write failed");
+    file.write_all("}".as_bytes()).expect("write failed");
+}
+
 fn main(){
     let args: Vec<_> = env::args().collect();
     let mut update: bool = false;
     if args.len() > 1 {
         if args.len() > 2 && args[2] == "-u" { update = true; }
         match args[1].as_str() {
+            "-g" => {
+                graph();
+            }
             "-c" => {
                 if update { 
                     let mut p: Option<Person> = person::search(); 

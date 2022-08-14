@@ -191,7 +191,7 @@ pub fn id_to_person(id: i32) -> Vec<Person>{
         }).unwrap();
 }
 
-// Parent
+// Relation
 
 #[allow(unused_must_use)]
 pub fn insert_relation(relation: Option<Relation>){
@@ -248,44 +248,65 @@ pub fn update_relation(original: Option<Relation>, updated: Option<Relation>) {
     match updated {
         None => println!("No relation found"),
         Some(up) => {
-            let mut update: String = String::from("UPDATE relation SET male_id = ");
-
+            let mut update: String = String::from("UPDATE relation SET ");
+            let mut first: String = String::new();
+            let mut second: String = String::new();
             match up.male {
-                None => update.push_str("null"),
-                Some(z) => update.push_str(&z.person_id.to_string()),
+                None => {},
+                Some(z) => {
+                    first.push_str("male_id = ");
+                    first.push_str(&z.person_id.to_string())
+                },
             }
-            update.push_str(", female_id = ");
             match up.female {
-                None => update.push_str("null"),
-                Some(z) => update.push_str(&z.person_id.to_string()),
+                None => {},
+                Some(z) => {
+                    if !first.is_empty() { first.push_str(", female_id = ") }
+                    else { first.push_str("female_id = ") }
+                    first.push_str(&z.person_id.to_string())
+                },
             }
-            update.push_str(", child_id = ");
             match up.child {
-                None => update.push_str("null"),
-                Some(z) => update.push_str(&z.person_id.to_string()),
+                None => {},
+                Some(z) => {
+                    if !first.is_empty() { first.push_str(", child_id = ") }
+                    else { first.push_str("child_id = ") }
+                    first.push_str(&z.person_id.to_string())
+                },
             }
-            update.push_str(" WHERE male_id = ");
+            first.push_str(" WHERE ");
             match original {
                 None => println!("No relation found"),
                 Some(ori) => {
                     match ori.male {
-                        None => update.push_str("null"),
-                        Some(z) => update.push_str(&z.person_id.to_string()),
+                        None => {},
+                        Some(z) => {
+                            second.push_str("male_id = ");
+                            second.push_str(&z.person_id.to_string())
+                        },
                     }
-                    update.push_str(" and female_id = ");
                     match ori.female {
-                        None => update.push_str("null"),
-                        Some(z) => update.push_str(&z.person_id.to_string()),
+                        None => {},
+                        Some(z) => {
+                            if !second.is_empty() { second.push_str(" and female_id = "); }
+                            else { second.push_str("female_id = "); }
+                            second.push_str(&z.person_id.to_string())
+                        },
                     }
-                    update.push_str(" and child_id = ");
                     match ori.child {
-                        None => update.push_str("null"),
-                        Some(z) => update.push_str(&z.person_id.to_string()),
+                        None => {},
+                        Some(z) => {
+                            if !second.is_empty() { second.push_str(" and child_id = "); }
+                            else { second.push_str("child_id = "); }
+                            second.push_str(&z.person_id.to_string())
+                        },
                     }
+                    update.push_str(&first);
+                    update.push_str(&second);
                     update.push_str(";");
                     println!("{}", update.clone());
                     match POOL.prep_exec(update, ()) {
-                        Ok(_) => {},
+                        Ok(_) => {println!("DONE")},
                         Err(z) => println!("{}", z),
                     }
                 },
