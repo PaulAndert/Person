@@ -137,15 +137,15 @@ pub fn change(mut p: Option<Person>) -> (Option<Person>, bool) {
 pub fn create() -> Option<Person>{
     let mut new_person: Option<Person> = Some(Person::new());
 
-    new_person.clone().map(|mut s| { 
-        s.vorname( question(None, 1, "Vorname".to_string())); 
-        s.zweitname( question(None, 2, "Zweitname".to_string()));
-        s.nachname( question(None, 3, "Nachname".to_string()));
-        s.geburtsname( question(None, 4, "Geburtsname".to_string()));
-        s.gender( question(None, 5, "Gender".to_string()));
-        s.geburtstag( question(None, 6, "Geburtstag".to_string()));
-        s.todestag( question(None, 7, "Todestag".to_string()));
-        s});
+    // new_person.clone().map(|mut s| { 
+    //     s.vorname( question(None, 1, "Vorname".to_string())); 
+    //     s.zweitname( question(None, 2, "Zweitname".to_string()));
+    //     s.nachname( question(None, 3, "Nachname".to_string()));
+    //     s.geburtsname( question(None, 4, "Geburtsname".to_string()));
+    //     s.gender( question(None, 5, "Gender".to_string()));
+    //     s.geburtstag( question(None, 6, "Geburtstag".to_string()));
+    //     s.todestag( question(None, 7, "Todestag".to_string()));
+    //     s});
 
     let mut boo: bool = true;
     while boo{

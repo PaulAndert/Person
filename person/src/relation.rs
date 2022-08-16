@@ -119,7 +119,7 @@ pub fn search() -> Option<Relation> {
     let mut results: Vec<Relation>;
     loop {
         println!("Please enter a person who is in that relation (until there is only one relation left)");
-        results = crate::db::person_to_relations(crate::person::search());
+        results = crate::db::person_to_relations(crate::person::search(), 0);
         if results.clone().len() == 1 { return Some(results[0].clone()) }
         else{ crate::relation::print_vector(results) }
     }

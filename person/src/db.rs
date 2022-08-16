@@ -329,17 +329,26 @@ pub fn update_relation(original: Option<Relation>, updated: Option<Relation>) {
     };
 }
 
-pub fn person_to_relations(person: Option<Person>) -> Vec<Relation> {
-    let mut selec: String = String::from("SELECT * from relation where male_id = ");
+pub fn person_to_relations(person: Option<Person>, mode: i32) -> Vec<Relation> {
+    let mut selec: String = String::from("SELECT * from relation where ");
  
     match person {
         None => {},
         Some(z) => {
-            selec.push_str(&z.person_id.to_string());
-            selec.push_str(" or female_id = ");
-            selec.push_str(&z.person_id.to_string());
-            selec.push_str(" or child_id = ");
-            selec.push_str(&z.person_id.to_string());
+            if mode == 0 || mode == 1 {
+                selec.push_str(" child_id = ");
+                selec.push_str(&z.person_id.to_string());
+            }
+            if mode == 0 { selec.push_str(" or ") }
+            if mode == 0 || mode == 2 {
+                selec.push_str("male_id = ");
+                selec.push_str(&z.person_id.to_string());
+            }
+            if mode == 0 { selec.push_str(" or ") }
+            if mode == 0 || mode == 3 {
+                selec.push_str("female_id = ");
+                selec.push_str(&z.person_id.to_string());
+            }        
             selec.push_str(";");
         }
     }
