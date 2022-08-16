@@ -1,17 +1,15 @@
 digraph P {
-edge [dir=none];
-node [shape=box];
-male [shape=square, label="Randy Andert
-29.03.1973",color="blue", pos="0,2!"];
-female [shape=circle, label="Silvia Andert
-08.01.1977",color="pink", pos="2,2!"];
-child [shape=square, label="Paul Randy Andert
-15.01.2002",color="blue", pos="1,0!"];
-t01 [shape=circle,label="",height=0.01,width=0.01, pos="0,1!"];
-t11 [shape=circle,label="",height=0.01,width=0.01, pos="1,1!"];
-t21 [shape=circle,label="",height=0.01,width=0.01, pos="2,1!"];
-male -> t01
-female -> t21
-t01 -> t11 -> t21
-t11 -> child
+edge [dir=forward, arrowhead=none];
+node [fontsize=11, fixedsize=true, height=1.5, width=1.5];
+
+x0y0 [shape=square, color="blue",label="Paul Randy Andert", pos="0,0!"];
+x0y1 [shape=circle,label="",height=0.01,width=0.01, pos="0,1!"];
+
+x_2y2 [shape=square, color="blue",label="Randy Andert", pos="-2,2!"];
+x_2y1 [shape=circle,label="",height=0.01,width=0.01, pos="-2,1!"];
+
+x2y2 [shape=circle, color="pink",label="Silvia Andert", pos="2,2!"];
+x2y1 [shape=circle,label="",height=0.01,width=0.01, pos="2,1!"];
+
+x_2y2 -> x_2y1 -> x0y1 -> x2y1 -> x2y2 ; x0y1 -> x0y0
 }

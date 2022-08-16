@@ -8,6 +8,7 @@ pub struct Person {
     pub zweitname: Option<String>,
     pub nachname: Option<String>,
     pub geburtsname: Option<String>, 
+    pub gender: Option<String>, 
     pub geburtstag: Option<String>,
     pub todestag: Option<String>,
 }
@@ -20,6 +21,7 @@ impl Person {
             zweitname: Some(String::new()),
             nachname: Some(String::new()),
             geburtsname: Some(String::new()),
+            gender: Some(String::new()),
             geburtstag: Some(String::new()),
             todestag: Some(String::new()),
         };
@@ -38,6 +40,10 @@ impl Person {
     }
     pub fn geburtsname(&mut self, geburtsname: Option<String>) -> &mut Self {
         self.geburtsname = geburtsname;
+        self
+    }
+    pub fn gender(&mut self, gender: Option<String>) -> &mut Self {
+        self.gender = gender;
         self
     }
     pub fn geburtstag(&mut self, geburtstag: Option<String>) -> &mut Self {
@@ -104,13 +110,19 @@ pub fn change(mut p: Option<Person>) -> (Option<Person>, bool) {
             Some('5') => {
                 match p{
                     None => {},
-                    Some(ref mut z) => z.geburtstag = question(z.geburtstag.clone(), 5, "Geburtstag".to_string()),
+                    Some(ref mut z) => z.gender = question(z.gender.clone(), 5, "Gender".to_string()),
                 }
             },
             Some('6') => {
                 match p{
                     None => {},
-                    Some(ref mut z) => z.todestag = question(z.todestag.clone(), 6, "Todestag".to_string()),
+                    Some(ref mut z) => z.geburtstag = question(z.geburtstag.clone(), 6, "Geburtstag".to_string()),
+                }
+            },
+            Some('7') => {
+                match p{
+                    None => {},
+                    Some(ref mut z) => z.todestag = question(z.todestag.clone(), 7, "Todestag".to_string()),
                 }
             },
             Some(_) => {
@@ -130,8 +142,9 @@ pub fn create() -> Option<Person>{
         s.zweitname( question(None, 2, "Zweitname".to_string()));
         s.nachname( question(None, 3, "Nachname".to_string()));
         s.geburtsname( question(None, 4, "Geburtsname".to_string()));
-        s.geburtstag( question(None, 5, "Geburtstag".to_string()));
-        s.todestag( question(None, 6, "Todestag".to_string()));
+        s.gender( question(None, 5, "Gender".to_string()));
+        s.geburtstag( question(None, 6, "Geburtstag".to_string()));
+        s.todestag( question(None, 7, "Todestag".to_string()));
         s});
 
     let mut boo: bool = true;
@@ -240,7 +253,16 @@ pub fn print(person: Option<Person>) {
                 },
             };
 
-            per.push_str("\n[5] Geburtstag: ");
+            per.push_str("\n[5] Gender: ");
+            match &person.gender {
+                None => per.push_str("--"),
+                Some(z) => {
+                    if z.is_empty() { per.push_str("--"); }
+                    else { per.push_str(z) }
+                },
+            };
+
+            per.push_str("\n[6] Geburtstag: ");
             match &person.geburtstag {
                 None => per.push_str("--"),
                 Some(z) => {
@@ -249,7 +271,7 @@ pub fn print(person: Option<Person>) {
                 },
             };
 
-            per.push_str("\n[6] Todestag: ");
+            per.push_str("\n[7] Todestag: ");
             match &person.todestag {
                 None => per.push_str("--"),
                 Some(z) => {

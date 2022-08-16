@@ -8,7 +8,7 @@ pub fn get_all_persons() -> Vec<Person>{
     return POOL.prep_exec("SELECT * from person", ())
         .map(|result| {
             result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, geburtstag, todestag) = mysql::from_row(row);
+                let (person_id, vorname, zweitname, nachname, geburtsname, gender, geburtstag, todestag) = mysql::from_row(row);
 
                 Person {
                     person_id,
@@ -16,6 +16,7 @@ pub fn get_all_persons() -> Vec<Person>{
                     zweitname,
                     nachname,
                     geburtsname,
+                    gender,
                     geburtstag,
                     todestag,
                 }
@@ -28,7 +29,7 @@ pub fn insert_person(person: Option<Person>){
     match person {
         None => println!("No person found"),
         Some(person) => {
-            let mut insert: String = String::from("INSERT INTO person (vorname, zweitname, nachname, geburtsname, geburtstag, todestag) VALUES (\"");
+            let mut insert: String = String::from("INSERT INTO person (vorname, zweitname, nachname, geburtsname, gender, geburtstag, todestag) VALUES (\"");
             
             match person.vorname {
                 None => insert.push_str(""),
@@ -46,6 +47,11 @@ pub fn insert_person(person: Option<Person>){
             }
             insert.push_str("\", \"");
             match person.geburtsname {
+                None => insert.push_str(""),
+                Some(z) => insert.push_str(&z),
+            }
+            insert.push_str("\", \"");
+            match person.gender {
                 None => insert.push_str(""),
                 Some(z) => insert.push_str(&z),
             }
@@ -95,6 +101,11 @@ pub fn update_person(person: Option<Person>){
                 None => update.push_str(""),
                 Some(z) => update.push_str(&z),
             }
+            update.push_str("\", gender = \"");
+            match person.gender {
+                None => update.push_str(""),
+                Some(z) => update.push_str(&z),
+            }
             update.push_str("\", geburtstag = \"");
             match person.geburtstag {
                 None => update.push_str(""),
@@ -128,7 +139,7 @@ pub fn single_name_person(name: String) -> Vec<Person>{
     return POOL.prep_exec(selec, ())
         .map(|result| {
             result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, geburtstag, todestag) = mysql::from_row(row);
+                let (person_id, vorname, zweitname, nachname, geburtsname, gender, geburtstag, todestag) = mysql::from_row(row);
 
                 Person {
                     person_id,
@@ -136,6 +147,7 @@ pub fn single_name_person(name: String) -> Vec<Person>{
                     zweitname,
                     nachname,
                     geburtsname,
+                    gender,
                     geburtstag,
                     todestag,
                 }
@@ -153,7 +165,7 @@ pub fn double_name_person(a: String, b: String) -> Vec<Person>{
     return POOL.prep_exec(selec, ())
         .map(|result| {
             result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, geburtstag, todestag) = mysql::from_row(row);
+                let (person_id, vorname, zweitname, nachname, geburtsname, gender, geburtstag, todestag) = mysql::from_row(row);
 
                 Person {
                     person_id,
@@ -161,6 +173,7 @@ pub fn double_name_person(a: String, b: String) -> Vec<Person>{
                     zweitname,
                     nachname,
                     geburtsname,
+                    gender,
                     geburtstag,
                     todestag,
                 }
@@ -176,7 +189,7 @@ pub fn id_to_person(id: i32) -> Vec<Person>{
     return POOL.prep_exec(selec, ())
         .map(|result| {
             result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, geburtstag, todestag) = mysql::from_row(row);
+                let (person_id, vorname, zweitname, nachname, geburtsname, gender, geburtstag, todestag) = mysql::from_row(row);
 
                 Person {
                     person_id,
@@ -184,6 +197,7 @@ pub fn id_to_person(id: i32) -> Vec<Person>{
                     zweitname,
                     nachname,
                     geburtsname,
+                    gender,
                     geburtstag,
                     todestag,
                 }
