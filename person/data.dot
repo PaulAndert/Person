@@ -1,54 +1,139 @@
 digraph P {
     edge [dir=forward, arrowhead=none];
     node [fontsize=11, fixedsize=true, height=1.5, width=1.5];
-    y1900 [shape=none, label="1900", pos="-15,0!"];
-    y2000 [shape=none, label="2000", pos="-15,-12.5!"];
-    y0 [shape=circle,label="",height=0.01,width=0.01, pos="15,0!"];
-    y1 [shape=circle,label="",height=0.01,width=0.01, pos="15,-12.5!"];
+    y1900 [shape=none, label="1900", pos="-20,-5!"];
+    y2000 [shape=none, label="2000", pos="-20,-15!"];
+    y0 [shape=circle,label="",height=0.01,width=0.01, pos="20,-5!"];
+    y1 [shape=circle,label="",height=0.01,width=0.01, pos="20,-15!"];
     y1900 -> y0 [style=dashed] ; y2000 -> y1 [style=dashed]
 
-x0y_12_75 [shape=square, color="blue",label="Paul Randy Andert
-2002", pos="0,-12.75!"];
+x0y_15_1520 [shape=square, color="blue",label="Paul Randy Andert
+2002", pos="0,-15.2!"];
 
-x_2y_9_62 [shape=circle, color="pink",label="Silvia Andert
-1977", pos="-2,-9.625!"];
+x_8y_12_1270 [shape=circle, color="pink",label="Silvia Andert
+1977", pos="-8,-12.7!"];
 
-x2y_9_12 [shape=square, color="blue",label="Randy Andert
-1973", pos="2,-9.125!"];
-x_2y_11_18 [shape=circle,label="",height=0.01,width=0.01, pos="-2,-11.1875!"];
-x0y_11_18 [shape=circle,label="",height=0.01,width=0.01, pos="0,-11.1875!"];
-x2y_11_18 [shape=circle,label="",height=0.01,width=0.01, pos="2,-11.1875!"];
+x8y_12_1230 [shape=square, color="blue",label="Randy Andert
+1973", pos="8,-12.3!"];
+x_8y_13_1395 [shape=circle,label="",height=0.01,width=0.01, pos="-8,-13.95!"];
+x0y_13_1395 [shape=circle,label="",height=0.01,width=0.01, pos="0,-13.95!"];
+x8y_13_1395 [shape=circle,label="",height=0.01,width=0.01, pos="8,-13.95!"];
 
-x_2y_9_62 -> x_2y_11_18 -> x0y_11_18 -> x2y_11_18 -> x2y_9_12 ; x0y_11_18 -> x0y_12_75
-x_2y_9_62 [shape=circle, color="pink",label="Silvia Andert
-1977", pos="-2,-9.625!"];
+x_8y_12_1270 -> x_8y_13_1395 -> x0y_13_1395 -> x8y_13_1395 -> x8y_12_1230 ; x0y_13_1395 -> x0y_15_1520
+x_8y_12_1270 [shape=circle, color="pink",label="Silvia Andert
+1977", pos="-8,-12.7!"];
 
-x_3y_6_0 [shape=circle, color="pink",label="Edith Inge
+x_12y_9_980 [shape=circle, color="pink",label="Edith Inge
 Gertrud Andert 
-1948", pos="-3,-6!"];
+1948", pos="-12,-9.8!"];
 
-x_1y_5_0 [shape=square, color="blue",label="Rudi Horst Andert
-1940", pos="-1,-5!"];
-x_3y_7_81 [shape=circle,label="",height=0.01,width=0.01, pos="-3,-7.8125!"];
-x_2y_7_81 [shape=circle,label="",height=0.01,width=0.01, pos="-2,-7.8125!"];
-x_1y_7_81 [shape=circle,label="",height=0.01,width=0.01, pos="-1,-7.8125!"];
+x_4y_9_900 [shape=square, color="blue",label="Rudi Horst Andert
+1940", pos="-4,-9!"];
+x_12y_11_1125 [shape=circle,label="",height=0.01,width=0.01, pos="-12,-11.25!"];
+x_8y_11_1125 [shape=circle,label="",height=0.01,width=0.01, pos="-8,-11.25!"];
+x_4y_11_1125 [shape=circle,label="",height=0.01,width=0.01, pos="-4,-11.25!"];
 
-x_3y_6_0 -> x_3y_7_81 -> x_2y_7_81 -> x_1y_7_81 -> x_1y_5_0 ; x_2y_7_81 -> x_2y_9_62
+x_12y_9_980 -> x_12y_11_1125 -> x_8y_11_1125 -> x_4y_11_1125 -> x_4y_9_900 ; x_8y_11_1125 -> x_8y_12_1270
+x_12y_9_980 [shape=circle, color="pink",label="Edith Inge
+Gertrud Andert 
+1948", pos="-12,-9.8!"];
+
+x_14y_6_639 [shape=circle, color="pink",label="Gertrud Wendt
+1914", pos="-14,-6.3999996!"];
+
+x_10y_5_560 [shape=square, color="blue",label="Adolf Wendt
+1906", pos="-10,-5.6!"];
+x_14y_8_810 [shape=circle,label="",height=0.01,width=0.01, pos="-14,-8.1!"];
+x_12y_8_810 [shape=circle,label="",height=0.01,width=0.01, pos="-12,-8.1!"];
+x_10y_8_810 [shape=circle,label="",height=0.01,width=0.01, pos="-10,-8.1!"];
+
+x_14y_6_639 -> x_14y_8_810 -> x_12y_8_810 -> x_10y_8_810 -> x_10y_5_560 ; x_12y_8_810 -> x_12y_9_980
+x_14y_6_639 [shape=circle, color="pink",label="Gertrud Wendt
+1914", pos="-14,-6.3999996!"];
+
+x_15y_3_340 [shape=circle, color="pink",label="Marie Polz
+Unknown", pos="-15,-3.4!"];
+
+x_13y_3_340 [shape=square, color="blue",label="Wilhelm Polz
+Unknown", pos="-13,-3.4!"];
+x_15y_4_489 [shape=circle,label="",height=0.01,width=0.01, pos="-15,-4.8999996!"];
+x_14y_4_489 [shape=circle,label="",height=0.01,width=0.01, pos="-14,-4.8999996!"];
+x_13y_4_489 [shape=circle,label="",height=0.01,width=0.01, pos="-13,-4.8999996!"];
+
+x_15y_3_340 -> x_15y_4_489 -> x_14y_4_489 -> x_13y_4_489 -> x_13y_3_340 ; x_14y_4_489 -> x_14y_6_639
 
 
-x2y_9_12 [shape=square, color="blue",label="Randy Andert
-1973", pos="2,-9.125!"];
+x_10y_5_560 [shape=square, color="blue",label="Adolf Wendt
+1906", pos="-10,-5.6!"];
 
-x1y_6_75 [shape=circle, color="pink",label="Gabi Kosin
-1954", pos="1,-6.75!"];
+x_11y_2_260 [shape=circle, color="pink",label="Marie Wendt
+Unknown", pos="-11,-2.6!"];
 
-x3y_6_37 [shape=square, color="blue",label="Rainer Dabudziak
-1951", pos="3,-6.375!"];
-x1y_7_93 [shape=circle,label="",height=0.01,width=0.01, pos="1,-7.9375!"];
-x2y_7_93 [shape=circle,label="",height=0.01,width=0.01, pos="2,-7.9375!"];
-x3y_7_93 [shape=circle,label="",height=0.01,width=0.01, pos="3,-7.9375!"];
+x_9y_2_260 [shape=square, color="grey",label="Unknown  
+Unknown", pos="-9,-2.6!"];
+x_11y_4_410 [shape=circle,label="",height=0.01,width=0.01, pos="-11,-4.1!"];
+x_10y_4_410 [shape=circle,label="",height=0.01,width=0.01, pos="-10,-4.1!"];
+x_9y_4_410 [shape=circle,label="",height=0.01,width=0.01, pos="-9,-4.1!"];
 
-x1y_6_75 -> x1y_7_93 -> x2y_7_93 -> x3y_7_93 -> x3y_6_37 ; x2y_7_93 -> x2y_9_12
+x_11y_2_260 -> x_11y_4_410 -> x_10y_4_410 -> x_9y_4_410 -> x_9y_2_260 ; x_10y_4_410 -> x_10y_5_560
+
+
+x_4y_9_900 [shape=square, color="blue",label="Rudi Horst Andert
+1940", pos="-4,-9!"];
+
+x_6y_5_550 [shape=circle, color="pink",label="Gertrud Andert
+1905", pos="-6,-5.5!"];
+
+x_2y_5_560 [shape=square, color="blue",label="Willi Andert
+1906", pos="-2,-5.6!"];
+x_6y_7_730 [shape=circle,label="",height=0.01,width=0.01, pos="-6,-7.3!"];
+x_4y_7_730 [shape=circle,label="",height=0.01,width=0.01, pos="-4,-7.3!"];
+x_2y_7_730 [shape=circle,label="",height=0.01,width=0.01, pos="-2,-7.3!"];
+
+x_6y_5_550 -> x_6y_7_730 -> x_4y_7_730 -> x_2y_7_730 -> x_2y_5_560 ; x_4y_7_730 -> x_4y_9_900
+
+
+x8y_12_1230 [shape=square, color="blue",label="Randy Andert
+1973", pos="8,-12.3!"];
+
+x4y_10_1040 [shape=circle, color="pink",label="Gabi Kosin
+1954", pos="4,-10.4!"];
+
+x12y_10_1010 [shape=square, color="blue",label="Rainer Dabudziak
+1951", pos="12,-10.1!"];
+x4y_11_1135 [shape=circle,label="",height=0.01,width=0.01, pos="4,-11.35!"];
+x8y_11_1135 [shape=circle,label="",height=0.01,width=0.01, pos="8,-11.35!"];
+x12y_11_1135 [shape=circle,label="",height=0.01,width=0.01, pos="12,-11.35!"];
+
+x4y_10_1040 -> x4y_11_1135 -> x8y_11_1135 -> x12y_11_1135 -> x12y_10_1010 ; x8y_11_1135 -> x8y_12_1230
+x4y_10_1040 [shape=circle, color="pink",label="Gabi Kosin
+1954", pos="4,-10.4!"];
+
+x2y_7_740 [shape=circle, color="pink",label="Erika Ganzler
+Unknown", pos="2,-7.4!"];
+
+x6y_7_740 [shape=square, color="blue",label="Siegfried Ganzler
+Unknown", pos="6,-7.4!"];
+x2y_8_889 [shape=circle,label="",height=0.01,width=0.01, pos="2,-8.9!"];
+x4y_8_889 [shape=circle,label="",height=0.01,width=0.01, pos="4,-8.9!"];
+x6y_8_889 [shape=circle,label="",height=0.01,width=0.01, pos="6,-8.9!"];
+
+x2y_7_740 -> x2y_8_889 -> x4y_8_889 -> x6y_8_889 -> x6y_7_740 ; x4y_8_889 -> x4y_10_1040
+
+
+x12y_10_1010 [shape=square, color="blue",label="Rainer Dabudziak
+1951", pos="12,-10.1!"];
+
+x10y_8_810 [shape=circle, color="pink",label="Irene Dabudziak
+1931", pos="10,-8.1!"];
+
+x14y_8_800 [shape=square, color="blue",label="Paul Dabudziak
+1930", pos="14,-8!"];
+x10y_9_910 [shape=circle,label="",height=0.01,width=0.01, pos="10,-9.1!"];
+x12y_9_910 [shape=circle,label="",height=0.01,width=0.01, pos="12,-9.1!"];
+x14y_9_910 [shape=circle,label="",height=0.01,width=0.01, pos="14,-9.1!"];
+
+x10y_8_810 -> x10y_9_910 -> x12y_9_910 -> x14y_9_910 -> x14y_8_800 ; x12y_9_910 -> x12y_10_1010
 
 
 }

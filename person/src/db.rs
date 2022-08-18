@@ -8,17 +8,17 @@ pub fn get_all_persons() -> Vec<Person>{
     return POOL.prep_exec("SELECT * from person", ())
         .map(|result| {
             result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, gender, geburtstag, todestag) = mysql::from_row(row);
+                let (person_id, first_name, middle_name, surname, maiden_name, gender, birthday, deathday) = mysql::from_row(row);
 
                 Person {
                     person_id,
-                    vorname,
-                    zweitname,
-                    nachname,
-                    geburtsname,
+                    first_name,
+                    middle_name,
+                    surname,
+                    maiden_name,
                     gender,
-                    geburtstag,
-                    todestag,
+                    birthday,
+                    deathday,
                 }
             }).collect()
         }).unwrap();
@@ -29,24 +29,24 @@ pub fn insert_person(person: Option<Person>){
     match person {
         None => println!("No person found"),
         Some(person) => {
-            let mut insert: String = String::from("INSERT INTO person (vorname, zweitname, nachname, geburtsname, gender, geburtstag, todestag) VALUES (\"");
+            let mut insert: String = String::from("INSERT INTO person (first_name, middle_name, surname, maiden_name, gender, birthday, deathday) VALUES (\"");
             
-            match person.vorname {
+            match person.first_name {
                 None => insert.push_str(""),
                 Some(z) => insert.push_str(&z),
             }
             insert.push_str("\", \"");
-            match person.zweitname {
+            match person.middle_name {
                 None => insert.push_str(""),
                 Some(z) => insert.push_str(&z),
             }
             insert.push_str("\", \"");
-            match person.nachname {
+            match person.surname {
                 None => insert.push_str(""),
                 Some(z) => insert.push_str(&z),
             }
             insert.push_str("\", \"");
-            match person.geburtsname {
+            match person.maiden_name {
                 None => insert.push_str(""),
                 Some(z) => insert.push_str(&z),
             }
@@ -56,12 +56,12 @@ pub fn insert_person(person: Option<Person>){
                 Some(z) => insert.push_str(&z),
             }
             insert.push_str("\", \"");
-            match person.geburtstag {
+            match person.birthday {
                 None => insert.push_str(""),
                 Some(z) => insert.push_str(&z),
             }
             insert.push_str("\", \"");
-            match person.todestag {
+            match person.deathday {
                 None => insert.push_str(""),
                 Some(z) => insert.push_str(&z),
             }
@@ -80,24 +80,24 @@ pub fn update_person(person: Option<Person>){
     match person {
         None => println!("No person found"),
         Some(person) => {
-            let mut update: String = String::from("UPDATE person SET vorname = \"");
+            let mut update: String = String::from("UPDATE person SET first_name = \"");
 
-            match person.vorname {
+            match person.first_name {
                 None => update.push_str(""),
                 Some(z) => update.push_str(&z),
             }
-            update.push_str("\", zweitname = \"");
-            match person.zweitname {
+            update.push_str("\", middle_name = \"");
+            match person.middle_name {
                 None => update.push_str(""),
                 Some(z) => update.push_str(&z),
             }
-            update.push_str("\", nachname = \"");
-            match person.nachname {
+            update.push_str("\", surname = \"");
+            match person.surname {
                 None => update.push_str(""),
                 Some(z) => update.push_str(&z),
             }
-            update.push_str("\", geburtsname = \"");
-            match person.geburtsname {
+            update.push_str("\", maiden_name = \"");
+            match person.maiden_name {
                 None => update.push_str(""),
                 Some(z) => update.push_str(&z),
             }
@@ -106,13 +106,13 @@ pub fn update_person(person: Option<Person>){
                 None => update.push_str(""),
                 Some(z) => update.push_str(&z),
             }
-            update.push_str("\", geburtstag = \"");
-            match person.geburtstag {
+            update.push_str("\", birthday = \"");
+            match person.birthday {
                 None => update.push_str(""),
                 Some(z) => update.push_str(&z),
             }
-            update.push_str("\", todestag = \"");
-            match person.todestag {
+            update.push_str("\", deathday = \"");
+            match person.deathday {
                 None => update.push_str(""),
                 Some(z) => update.push_str(&z),
             }
@@ -130,52 +130,52 @@ pub fn update_person(person: Option<Person>){
 
 #[allow(unused_must_use)]
 pub fn single_name_person(name: String) -> Vec<Person>{
-    let mut selec: String = String::from("SELECT * from person where vorname like '%");
+    let mut selec: String = String::from("SELECT * from person where first_name like '%");
     selec.push_str(&name);
-    selec.push_str("%' or nachname = '%;");
+    selec.push_str("%' or surname = '%;");
     selec.push_str(&name);
     selec.push_str("%';");
 
     return POOL.prep_exec(selec, ())
         .map(|result| {
             result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, gender, geburtstag, todestag) = mysql::from_row(row);
+                let (person_id, first_name, middle_name, surname, maiden_name, gender, birthday, deathday) = mysql::from_row(row);
 
                 Person {
                     person_id,
-                    vorname,
-                    zweitname,
-                    nachname,
-                    geburtsname,
+                    first_name,
+                    middle_name,
+                    surname,
+                    maiden_name,
                     gender,
-                    geburtstag,
-                    todestag,
+                    birthday,
+                    deathday,
                 }
             }).collect()
         }).unwrap();
 }
 
 pub fn double_name_person(a: String, b: String) -> Vec<Person>{
-    let mut selec: String = String::from("SELECT * from person where vorname like '%");
+    let mut selec: String = String::from("SELECT * from person where first_name like '%");
     selec.push_str(&a);
-    selec.push_str("%' or nachname = '%;");
+    selec.push_str("%' or surname = '%;");
     selec.push_str(&b);
     selec.push_str("%';");
 
     return POOL.prep_exec(selec, ())
         .map(|result| {
             result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, gender, geburtstag, todestag) = mysql::from_row(row);
+                let (person_id, first_name, middle_name, surname, maiden_name, gender, birthday, deathday) = mysql::from_row(row);
 
                 Person {
                     person_id,
-                    vorname,
-                    zweitname,
-                    nachname,
-                    geburtsname,
+                    first_name,
+                    middle_name,
+                    surname,
+                    maiden_name,
                     gender,
-                    geburtstag,
-                    todestag,
+                    birthday,
+                    deathday,
                 }
             }).collect()
         }).unwrap();
@@ -189,17 +189,17 @@ pub fn id_to_person(id: i32) -> Vec<Person>{
     return POOL.prep_exec(selec, ())
         .map(|result| {
             result.map(|x| x.unwrap()).map(|row| {
-                let (person_id, vorname, zweitname, nachname, geburtsname, gender, geburtstag, todestag) = mysql::from_row(row);
+                let (person_id, first_name, middle_name, surname, maiden_name, gender, birthday, deathday) = mysql::from_row(row);
 
                 Person {
                     person_id,
-                    vorname,
-                    zweitname,
-                    nachname,
-                    geburtsname,
+                    first_name,
+                    middle_name,
+                    surname,
+                    maiden_name,
                     gender,
-                    geburtstag,
-                    todestag,
+                    birthday,
+                    deathday,
                 }
             }).collect()
         }).unwrap();
