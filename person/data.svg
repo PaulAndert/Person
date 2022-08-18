@@ -46,59 +46,168 @@
 <text text-anchor="middle" x="1134" y="-57.2" font-family="Times,serif" font-size="11.00">Paul Randy Andert</text>
 <text text-anchor="middle" x="1134" y="-45.2" font-family="Times,serif" font-size="11.00">2002</text>
 </g>
-<!-- x_1y_9_62 -->
+<!-- x_2y_9_62 -->
 <g id="node6" class="node">
-<title>x_1y_9_62</title>
-<ellipse fill="none" stroke="pink" cx="1062" cy="-279" rx="54" ry="54"/>
-<text text-anchor="middle" x="1062" y="-282.2" font-family="Times,serif" font-size="11.00">Silvia Andert</text>
-<text text-anchor="middle" x="1062" y="-270.2" font-family="Times,serif" font-size="11.00">1977</text>
+<title>x_2y_9_62</title>
+<ellipse fill="none" stroke="pink" cx="990" cy="-279" rx="54" ry="54"/>
+<text text-anchor="middle" x="990" y="-282.2" font-family="Times,serif" font-size="11.00">Silvia Andert</text>
+<text text-anchor="middle" x="990" y="-270.2" font-family="Times,serif" font-size="11.00">1977</text>
 </g>
-<!-- x_1y_11_18 -->
-<g id="node9" class="node">
-<title>x_1y_11_18</title>
-<ellipse fill="none" stroke="black" cx="1062" cy="-166.5" rx="0.5" ry="0.5"/>
+<!-- x_2y_11_18 -->
+<g id="node8" class="node">
+<title>x_2y_11_18</title>
+<ellipse fill="none" stroke="black" cx="990" cy="-166.5" rx="0.5" ry="0.5"/>
 </g>
-<!-- x_1y_9_62&#45;&gt;x_1y_11_18 -->
+<!-- x_2y_9_62&#45;&gt;x_2y_11_18 -->
 <g id="edge3" class="edge">
-<title>x_1y_9_62&#45;&gt;x_1y_11_18</title>
-<path fill="none" stroke="black" d="M1062,-224.73C1062,-198.66 1062,-172.02 1062,-167.25"/>
+<title>x_2y_9_62&#45;&gt;x_2y_11_18</title>
+<path fill="none" stroke="black" d="M990,-224.73C990,-198.66 990,-172.02 990,-167.25"/>
 </g>
-<!-- x1y_9_12 -->
+<!-- x2y_9_12 -->
 <g id="node7" class="node">
-<title>x1y_9_12</title>
-<polygon fill="none" stroke="blue" points="1260,-369 1152,-369 1152,-261 1260,-261 1260,-369"/>
-<text text-anchor="middle" x="1206" y="-318.2" font-family="Times,serif" font-size="11.00">Randy Andert</text>
-<text text-anchor="middle" x="1206" y="-306.2" font-family="Times,serif" font-size="11.00">1973</text>
+<title>x2y_9_12</title>
+<polygon fill="none" stroke="blue" points="1332,-369 1224,-369 1224,-261 1332,-261 1332,-369"/>
+<text text-anchor="middle" x="1278" y="-318.2" font-family="Times,serif" font-size="11.00">Randy Andert</text>
+<text text-anchor="middle" x="1278" y="-306.2" font-family="Times,serif" font-size="11.00">1973</text>
 </g>
 <!-- x0y_11_18 -->
-<g id="node8" class="node">
+<g id="node9" class="node">
 <title>x0y_11_18</title>
 <ellipse fill="none" stroke="black" cx="1134" cy="-166.5" rx="0.5" ry="0.5"/>
+</g>
+<!-- x_2y_11_18&#45;&gt;x0y_11_18 -->
+<g id="edge4" class="edge">
+<title>x_2y_11_18&#45;&gt;x0y_11_18</title>
+<path fill="none" stroke="black" d="M990.64,-166.5C1000.54,-166.5 1121.8,-166.5 1133.15,-166.5"/>
 </g>
 <!-- x0y_11_18&#45;&gt;x0y_12_75 -->
 <g id="edge7" class="edge">
 <title>x0y_11_18&#45;&gt;x0y_12_75</title>
 <path fill="none" stroke="black" d="M1134,-165.78C1134,-161.1 1134,-134.34 1134,-108.18"/>
 </g>
-<!-- x1y_11_18 -->
+<!-- x2y_11_18 -->
 <g id="node10" class="node">
-<title>x1y_11_18</title>
-<ellipse fill="none" stroke="black" cx="1206" cy="-166.5" rx="0.5" ry="0.5"/>
+<title>x2y_11_18</title>
+<ellipse fill="none" stroke="black" cx="1278" cy="-166.5" rx="0.5" ry="0.5"/>
 </g>
-<!-- x0y_11_18&#45;&gt;x1y_11_18 -->
+<!-- x0y_11_18&#45;&gt;x2y_11_18 -->
 <g id="edge5" class="edge">
-<title>x0y_11_18&#45;&gt;x1y_11_18</title>
-<path fill="none" stroke="black" d="M1134.81,-166.5C1142.22,-166.5 1198.31,-166.5 1205.29,-166.5"/>
+<title>x0y_11_18&#45;&gt;x2y_11_18</title>
+<path fill="none" stroke="black" d="M1134.64,-166.5C1144.54,-166.5 1265.8,-166.5 1277.15,-166.5"/>
 </g>
-<!-- x_1y_11_18&#45;&gt;x0y_11_18 -->
-<g id="edge4" class="edge">
-<title>x_1y_11_18&#45;&gt;x0y_11_18</title>
-<path fill="none" stroke="black" d="M1062.81,-166.5C1070.22,-166.5 1126.31,-166.5 1133.29,-166.5"/>
-</g>
-<!-- x1y_11_18&#45;&gt;x1y_9_12 -->
+<!-- x2y_11_18&#45;&gt;x2y_9_12 -->
 <g id="edge6" class="edge">
-<title>x1y_11_18&#45;&gt;x1y_9_12</title>
-<path fill="none" stroke="black" d="M1206,-167.16C1206,-173.31 1206,-221.15 1206,-260.76"/>
+<title>x2y_11_18&#45;&gt;x2y_9_12</title>
+<path fill="none" stroke="black" d="M1278,-167.16C1278,-173.31 1278,-221.15 1278,-260.76"/>
+</g>
+<!-- x_3y_6_0 -->
+<g id="node11" class="node">
+<title>x_3y_6_0</title>
+<ellipse fill="none" stroke="pink" cx="918" cy="-540" rx="54" ry="54"/>
+<text text-anchor="middle" x="918" y="-549.2" font-family="Times,serif" font-size="11.00">Edith Inge</text>
+<text text-anchor="middle" x="918" y="-537.2" font-family="Times,serif" font-size="11.00">Gertrud Andert </text>
+<text text-anchor="middle" x="918" y="-525.2" font-family="Times,serif" font-size="11.00">1948</text>
+</g>
+<!-- x_3y_7_81 -->
+<g id="node13" class="node">
+<title>x_3y_7_81</title>
+<ellipse fill="none" stroke="black" cx="918" cy="-409.5" rx="0.5" ry="0.5"/>
+</g>
+<!-- x_3y_6_0&#45;&gt;x_3y_7_81 -->
+<g id="edge8" class="edge">
+<title>x_3y_6_0&#45;&gt;x_3y_7_81</title>
+<path fill="none" stroke="black" d="M918,-485.79C918,-452.74 918,-415.79 918,-410.22"/>
+</g>
+<!-- x_1y_5_0 -->
+<g id="node12" class="node">
+<title>x_1y_5_0</title>
+<polygon fill="none" stroke="blue" points="1116,-666 1008,-666 1008,-558 1116,-558 1116,-666"/>
+<text text-anchor="middle" x="1062" y="-615.2" font-family="Times,serif" font-size="11.00">Rudi Horst Andert</text>
+<text text-anchor="middle" x="1062" y="-603.2" font-family="Times,serif" font-size="11.00">1940</text>
+</g>
+<!-- x_2y_7_81 -->
+<g id="node14" class="node">
+<title>x_2y_7_81</title>
+<ellipse fill="none" stroke="black" cx="990" cy="-409.5" rx="0.5" ry="0.5"/>
+</g>
+<!-- x_3y_7_81&#45;&gt;x_2y_7_81 -->
+<g id="edge9" class="edge">
+<title>x_3y_7_81&#45;&gt;x_2y_7_81</title>
+<path fill="none" stroke="black" d="M918.81,-409.5C926.22,-409.5 982.31,-409.5 989.29,-409.5"/>
+</g>
+<!-- x_2y_7_81&#45;&gt;x_2y_9_62 -->
+<g id="edge12" class="edge">
+<title>x_2y_7_81&#45;&gt;x_2y_9_62</title>
+<path fill="none" stroke="black" d="M990,-408.67C990,-402.72 990,-366 990,-333.15"/>
+</g>
+<!-- x_1y_7_81 -->
+<g id="node15" class="node">
+<title>x_1y_7_81</title>
+<ellipse fill="none" stroke="black" cx="1062" cy="-409.5" rx="0.5" ry="0.5"/>
+</g>
+<!-- x_2y_7_81&#45;&gt;x_1y_7_81 -->
+<g id="edge10" class="edge">
+<title>x_2y_7_81&#45;&gt;x_1y_7_81</title>
+<path fill="none" stroke="black" d="M990.81,-409.5C998.22,-409.5 1054.31,-409.5 1061.29,-409.5"/>
+</g>
+<!-- x_1y_7_81&#45;&gt;x_1y_5_0 -->
+<g id="edge11" class="edge">
+<title>x_1y_7_81&#45;&gt;x_1y_5_0</title>
+<path fill="none" stroke="black" d="M1062,-410.08C1062,-417.79 1062,-500.65 1062,-557.79"/>
+</g>
+<!-- x1y_6_75 -->
+<g id="node16" class="node">
+<title>x1y_6_75</title>
+<ellipse fill="none" stroke="pink" cx="1206" cy="-486" rx="54" ry="54"/>
+<text text-anchor="middle" x="1206" y="-489.2" font-family="Times,serif" font-size="11.00">Gabi Kosin</text>
+<text text-anchor="middle" x="1206" y="-477.2" font-family="Times,serif" font-size="11.00">1954</text>
+</g>
+<!-- x1y_7_93 -->
+<g id="node18" class="node">
+<title>x1y_7_93</title>
+<ellipse fill="none" stroke="black" cx="1206" cy="-400.5" rx="0.5" ry="0.5"/>
+</g>
+<!-- x1y_6_75&#45;&gt;x1y_7_93 -->
+<g id="edge13" class="edge">
+<title>x1y_6_75&#45;&gt;x1y_7_93</title>
+<path fill="none" stroke="black" d="M1206,-431.85C1206,-417 1206,-404.14 1206,-401.15"/>
+</g>
+<!-- x3y_6_37 -->
+<g id="node17" class="node">
+<title>x3y_6_37</title>
+<polygon fill="none" stroke="blue" points="1404,-567 1296,-567 1296,-459 1404,-459 1404,-567"/>
+<text text-anchor="middle" x="1350" y="-516.2" font-family="Times,serif" font-size="11.00">Rainer Dabudziak</text>
+<text text-anchor="middle" x="1350" y="-504.2" font-family="Times,serif" font-size="11.00">1951</text>
+</g>
+<!-- x2y_7_93 -->
+<g id="node19" class="node">
+<title>x2y_7_93</title>
+<ellipse fill="none" stroke="black" cx="1278" cy="-400.5" rx="0.5" ry="0.5"/>
+</g>
+<!-- x1y_7_93&#45;&gt;x2y_7_93 -->
+<g id="edge14" class="edge">
+<title>x1y_7_93&#45;&gt;x2y_7_93</title>
+<path fill="none" stroke="black" d="M1206.81,-400.5C1214.22,-400.5 1270.31,-400.5 1277.29,-400.5"/>
+</g>
+<!-- x2y_7_93&#45;&gt;x2y_9_12 -->
+<g id="edge17" class="edge">
+<title>x2y_7_93&#45;&gt;x2y_9_12</title>
+<path fill="none" stroke="black" d="M1278,-399.95C1278,-397.19 1278,-384.33 1278,-369.41"/>
+</g>
+<!-- x3y_7_93 -->
+<g id="node20" class="node">
+<title>x3y_7_93</title>
+<ellipse fill="none" stroke="black" cx="1350" cy="-400.5" rx="0.5" ry="0.5"/>
+</g>
+<!-- x2y_7_93&#45;&gt;x3y_7_93 -->
+<g id="edge15" class="edge">
+<title>x2y_7_93&#45;&gt;x3y_7_93</title>
+<path fill="none" stroke="black" d="M1278.81,-400.5C1286.22,-400.5 1342.31,-400.5 1349.29,-400.5"/>
+</g>
+<!-- x3y_7_93&#45;&gt;x3y_6_37 -->
+<g id="edge16" class="edge">
+<title>x3y_7_93&#45;&gt;x3y_6_37</title>
+<path fill="none" stroke="black" d="M1350,-401.22C1350,-405.9 1350,-432.66 1350,-458.82"/>
 </g>
 </g>
 </svg>

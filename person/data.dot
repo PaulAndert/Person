@@ -10,16 +10,45 @@ digraph P {
 x0y_12_75 [shape=square, color="blue",label="Paul Randy Andert
 2002", pos="0,-12.75!"];
 
-x_1y_9_62 [shape=circle, color="pink",label="Silvia Andert
-1977", pos="-1,-9.625!"];
+x_2y_9_62 [shape=circle, color="pink",label="Silvia Andert
+1977", pos="-2,-9.625!"];
 
-x1y_9_12 [shape=square, color="blue",label="Randy Andert
-1973", pos="1,-9.125!"];
+x2y_9_12 [shape=square, color="blue",label="Randy Andert
+1973", pos="2,-9.125!"];
+x_2y_11_18 [shape=circle,label="",height=0.01,width=0.01, pos="-2,-11.1875!"];
 x0y_11_18 [shape=circle,label="",height=0.01,width=0.01, pos="0,-11.1875!"];
-x_1y_11_18 [shape=circle,label="",height=0.01,width=0.01, pos="-1,-11.1875!"];
-x1y_11_18 [shape=circle,label="",height=0.01,width=0.01, pos="1,-11.1875!"];
+x2y_11_18 [shape=circle,label="",height=0.01,width=0.01, pos="2,-11.1875!"];
 
-x_1y_9_62 -> x_1y_11_18 -> x0y_11_18 -> x1y_11_18 -> x1y_9_12 ; x0y_11_18 -> x0y_12_75
+x_2y_9_62 -> x_2y_11_18 -> x0y_11_18 -> x2y_11_18 -> x2y_9_12 ; x0y_11_18 -> x0y_12_75
+x_2y_9_62 [shape=circle, color="pink",label="Silvia Andert
+1977", pos="-2,-9.625!"];
+
+x_3y_6_0 [shape=circle, color="pink",label="Edith Inge
+Gertrud Andert 
+1948", pos="-3,-6!"];
+
+x_1y_5_0 [shape=square, color="blue",label="Rudi Horst Andert
+1940", pos="-1,-5!"];
+x_3y_7_81 [shape=circle,label="",height=0.01,width=0.01, pos="-3,-7.8125!"];
+x_2y_7_81 [shape=circle,label="",height=0.01,width=0.01, pos="-2,-7.8125!"];
+x_1y_7_81 [shape=circle,label="",height=0.01,width=0.01, pos="-1,-7.8125!"];
+
+x_3y_6_0 -> x_3y_7_81 -> x_2y_7_81 -> x_1y_7_81 -> x_1y_5_0 ; x_2y_7_81 -> x_2y_9_62
+
+
+x2y_9_12 [shape=square, color="blue",label="Randy Andert
+1973", pos="2,-9.125!"];
+
+x1y_6_75 [shape=circle, color="pink",label="Gabi Kosin
+1954", pos="1,-6.75!"];
+
+x3y_6_37 [shape=square, color="blue",label="Rainer Dabudziak
+1951", pos="3,-6.375!"];
+x1y_7_93 [shape=circle,label="",height=0.01,width=0.01, pos="1,-7.9375!"];
+x2y_7_93 [shape=circle,label="",height=0.01,width=0.01, pos="2,-7.9375!"];
+x3y_7_93 [shape=circle,label="",height=0.01,width=0.01, pos="3,-7.9375!"];
+
+x1y_6_75 -> x1y_7_93 -> x2y_7_93 -> x3y_7_93 -> x3y_6_37 ; x2y_7_93 -> x2y_9_12
 
 
 }
