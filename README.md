@@ -2,9 +2,9 @@
 
 A Rust CLI where you can create persons, connect them in relationsships and graph those relationships as a family tree graph.
 
-Mysql - to permanently save Persons and Relations
-Rust - language
-Graphviz - to graph the relations
+Mysql - to permanently save Persons and Relations  
+Rust - language  
+Graphviz - to graph the relations  
 
 # Instalation
 
