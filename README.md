@@ -18,6 +18,13 @@ move into the folder
 cd person/person
 ```
 
+copy the db.sql and execute it on a mysql server  
+
+go to src/db.rs and modify the string line 4 like:  
+mysql://user_name:password@server_ip:port/person  
+server_ip = mysql server ip OR localhost if running on local maschine
+port = 3306 if mysql is in default configuration
+
 execute rust code
 ```console
 cargo run
