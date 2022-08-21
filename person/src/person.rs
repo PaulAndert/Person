@@ -1,5 +1,4 @@
-// use super::db::*;
-// use crate::mixed_to_single;
+use crate::Relation;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
 pub struct Person {
@@ -351,4 +350,32 @@ pub fn vor_zweit_nach(person: Option<Person>) -> String{
         },
     }
     return per;
+}
+
+pub fn get_all_children(person: Person) -> Vec<Person> {
+    let mut all_c: Vec<Person> = Vec::new();
+    match person.clone().gender {
+        None=>{},
+        Some(z)=>{
+            let all_rela: Vec<Relation>;
+            if z == "m"{
+                all_rela = crate::db::person_to_relations(Some(person.clone()), 2);
+            }else if z == "f"{
+                all_rela = crate::db::person_to_relations(Some(person.clone()), 3);
+            }else{
+                all_rela = Vec::new();
+            }
+            for i in 0..all_rela.len() {
+                match all_rela[i].clone().child {
+                    None => {},
+                    Some(z) => {
+                        if !all_c.contains(&z) {
+                            all_c.push(z);
+                        }
+                    }
+                }
+            }
+        },
+    }
+    all_c
 }

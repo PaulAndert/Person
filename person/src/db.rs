@@ -331,7 +331,7 @@ pub fn update_relation(original: Option<Relation>, updated: Option<Relation>) {
 
 pub fn person_to_relations(person: Option<Person>, mode: i32) -> Vec<Relation> {
     let mut selec: String = String::from("SELECT * from relation where ");
- 
+    let mut ret: Vec<Relation> = Vec::new();
     match person {
         None => {},
         Some(z) => {
@@ -340,43 +340,47 @@ pub fn person_to_relations(person: Option<Person>, mode: i32) -> Vec<Relation> {
                 selec.push_str(&z.person_id.to_string());
             }
             if mode == 0 { selec.push_str(" or ") }
-            if mode == 0 || mode == 2 {
+            if mode == 0 || mode == 2 || mode == 4{
                 selec.push_str("male_id = ");
                 selec.push_str(&z.person_id.to_string());
             }
-            if mode == 0 { selec.push_str(" or ") }
-            if mode == 0 || mode == 3 {
+            if mode == 0 || mode == 4{ selec.push_str(" or ") }
+            if mode == 0 || mode == 3 || mode == 4{
                 selec.push_str("female_id = ");
                 selec.push_str(&z.person_id.to_string());
             }        
             selec.push_str(";");
+            
+            match POOL.prep_exec(selec, ()) {
+                Ok(z) => {
+                    ret = z.map(|x| x.unwrap()).map(|row| {
+                        let (male_id, female_id, child_id) = mysql::from_row::<(Option<i32>, Option<i32>, Option<i32>)>(row);
+
+                        Relation {
+                            male: {
+                                match male_id{
+                                    None => { None },
+                                    Some(z) => { Some(id_to_person(z)[0].clone()) }
+                                }
+                            },
+                            female: {
+                                match female_id{
+                                    None => { None },
+                                    Some(z) => { Some(id_to_person(z)[0].clone()) }
+                                }
+                            },
+                            child: {
+                                match child_id{
+                                    None => { None },
+                                    Some(z) => { Some(id_to_person(z)[0].clone()) }
+                                }
+                            },
+                        }
+                    }).collect()
+                },
+                Err(z) => println!("{}", z),
+            }   
         }
     }
-    return POOL.prep_exec(selec, ())
-        .map(|result| {
-            result.map(|x| x.unwrap()).map(|row| {
-                let (male_id, female_id, child_id) = mysql::from_row::<(Option<i32>, Option<i32>, Option<i32>)>(row);
-
-                Relation {
-                    male: {
-                        match male_id{
-                            None => { None },
-                            Some(z) => { Some(id_to_person(z)[0].clone()) }
-                        }
-                    },
-                    female: {
-                        match female_id{
-                            None => { None },
-                            Some(z) => { Some(id_to_person(z)[0].clone()) }
-                        }
-                    },
-                    child: {
-                        match child_id{
-                            None => { None },
-                            Some(z) => { Some(id_to_person(z)[0].clone()) }
-                        }
-                    },
-                }
-            }).collect()
-        }).unwrap();
+    ret
 }

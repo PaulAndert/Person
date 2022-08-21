@@ -8,6 +8,8 @@ pub mod relation;
 pub mod db;
 pub mod graph;
 
+pub mod matrix;
+
 use crate::person::Person;
 use crate::relation::Relation;
 
@@ -49,8 +51,8 @@ fn main(){
             }
             "-g" => {
                 if args.len() > 2 && match args[2].clone().chars().nth(0){ None => false, Some(z) => z.is_numeric(),} {
-                    let (test , _) = mixed_to_single(args[2].clone(), 1);
-                    graph::graph(test.parse::<i32>().unwrap());
+                    let (number , _) = mixed_to_single(args[2].clone(), 1);
+                    graph::graph(number.parse::<i32>().unwrap());
                 }else {
                     graph::graph(-1);
                 }
