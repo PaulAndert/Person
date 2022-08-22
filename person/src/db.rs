@@ -318,7 +318,6 @@ pub fn update_relation(original: Option<Relation>, updated: Option<Relation>) {
                     update.push_str(&first);
                     update.push_str(&second);
                     update.push_str(";");
-                    println!("{}", update.clone());
                     match POOL.prep_exec(update, ()) {
                         Ok(_) => {println!("DONE")},
                         Err(z) => println!("{}", z),

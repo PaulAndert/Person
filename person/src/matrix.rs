@@ -3,7 +3,7 @@ use crate::Relation;
 use std::collections::HashMap;
 
 // Width of the matrix (the more generations one has the more space it takes)
-const BREIT: usize = 32;
+const BREIT: usize = 128;
 // Height of the matrix (the more generations one has the more space it takes)
 const TIEF: usize = 10;
 
@@ -46,12 +46,12 @@ pub fn matrix_to_string(max_generation: i32) -> String{
     
     (matrix, relation) = person_into_matrix( p, matrix, 0, BREIT-1, 0, 1, max_generation, relation); // get every person related to p in the matrix
 
-    print_matrix(matrix.clone());
+    //print_matrix(matrix.clone());
     
     matrix = test(matrix);
     matrix = reduce_matrix(matrix); // reduce every useless row or column
 
-    print_matrix(matrix.clone());
+    //print_matrix(matrix.clone());
 
     let (map, unknown, relation) = restructure_children(matrix, relation); 
     // convert the matrix to 2 Hashmaps with person_id and x-positions and a Vector of every connection that needs to be made
@@ -71,7 +71,7 @@ fn test(matrix: [[i32;BREIT];TIEF]) -> [[i32;BREIT];TIEF] {
     temp_matrix[tiefste_person] = matrix[tiefste_person];
     let mut temp_j: usize = 1;
     for i in 1..=tiefste_person {
-        println!("{:?}", matrix[tiefste_person-i]);
+        //println!("{:?}", matrix[tiefste_person-i]);
         for j in 0..matrix[tiefste_person-i].len() - temp_j {
             temp_matrix[tiefste_person-i][temp_j+j] = matrix[tiefste_person-i][j];
         }
@@ -145,7 +145,7 @@ fn restructure_children(matrix: [[i32;BREIT];TIEF], relation: Vec<i32>) -> (Hash
                                             sector = start;
                                         }
                                         let mut children: f32 = 0.0;
-                                        println!("{} -- {} ({}); Kids: {} Start: {} Sector: {}", first, second, parent_distance, cnt, start, sector);
+                                        //println!("{} -- {} ({}); Kids: {} Start: {} Sector: {}", first, second, parent_distance, cnt, start, sector);
 
                                         for j in first..=second {
                                             if matrix[tiefste_person-k-1][j as usize] != -1 { // if there is a child
@@ -194,7 +194,7 @@ fn restructure_children(matrix: [[i32;BREIT];TIEF], relation: Vec<i32>) -> (Hash
                                             sector = start;
                                         }
                                         let mut children: f32 = 0.0;
-                                        println!("{} -- {} ({}); kids: {} Start: {} Sector: {}", dict_first, dict_second, parent_distance, cnt, start, sector);
+                                        //println!("{} -- {} ({}); kids: {} Start: {} Sector: {}", dict_first, dict_second, parent_distance, cnt, start, sector);
 
                                         for j in first..=second {
                                             if matrix[tiefste_person-k-1][j as usize] != -1 { // if there is a child
@@ -221,7 +221,7 @@ fn restructure_children(matrix: [[i32;BREIT];TIEF], relation: Vec<i32>) -> (Hash
             }
         }
     }
-    println!("{:?}", map);
+    //println!("{:?}", map);
     //println!("{:?}", unknown);
     //println!("{:?}", relation);
     (map, unknown, relation)

@@ -87,7 +87,7 @@ fn get_year_from_birthday(mut birthday: String) -> i32 {
     }
 }
 
-fn get_year_of_child(person: Person) -> (f32, String) {
+fn get_year_of_child(person: Person) -> i32 {
     let all_children: Vec<Person> = crate::person::get_all_children(person.clone());
     if all_children.len() > 0 {
         let mut children_year: i32 = 10000;
@@ -107,20 +107,20 @@ fn get_year_of_child(person: Person) -> (f32, String) {
                 }
             }
         }
-        return (translate(children_year-25, 1850, 2050, 0, -25), (children_year-25).to_string());
-    }else { return (0.0, (0.0).to_string()) }
+        return children_year;
+    }else { return 0; }
 }
 
-fn get_year_of_parent(person: Person) -> (f32, String) {
+fn get_year_of_parent(person: Person) -> i32 {
     let all_parents: Vec<Relation> = crate::db::person_to_relations(Some(person.clone()), 1);
     if all_parents.len() > 0 {
         let mut parent_year: i32 = 0;
-
+        let mut parents_have_no_bd_cnt: i32 = 0;
         match all_parents[0].male.clone() {
-            None => {},
+            None => {parents_have_no_bd_cnt += 1},
             Some(z) => {
                 match z.clone().birthday{
-                    None => {},
+                    None => {parents_have_no_bd_cnt += 1},
                     Some(geb) => {
                         if !geb.is_empty() {
                             let year_i32: i32 = get_year_from_birthday(geb);
@@ -129,16 +129,16 @@ fn get_year_of_parent(person: Person) -> (f32, String) {
                             }else {
                                 parent_year = year_i32;
                             }
-                        }
+                        }else { parents_have_no_bd_cnt += 1 }
                     },
                 }
             }
         }
         match all_parents[0].female.clone() {
-            None => {},
+            None => {parents_have_no_bd_cnt += 1},
             Some(z) => {
                 match z.clone().birthday{
-                    None => {},
+                    None => {parents_have_no_bd_cnt += 1},
                     Some(geb) => {
                         if !geb.is_empty() {
                             let year_i32: i32 = get_year_from_birthday(geb);
@@ -147,30 +147,83 @@ fn get_year_of_parent(person: Person) -> (f32, String) {
                             }else if year_i32 > parent_year {
                                 parent_year = year_i32;
                             }
-                        }
+                        }else { parents_have_no_bd_cnt += 1 }
                     },
                 }
             }
         }
-        return (translate(parent_year+25, 1850, 2050, 0, -25), (parent_year+25).to_string());
-    }else { return (0.0, (0.0).to_string()) }
+        // if person.person_id == 24 { 
+        //     println!("24: {} : {}", parent_year, parents_have_no_bd_cnt);
+        // }
+        if parents_have_no_bd_cnt == 2 || parent_year == 0{
+    
+            match all_parents[0].male.clone() {
+                None => {},
+                Some(z) => {
+                    parent_year = get_year_of_child(z.clone());
+                }
+            }
+            match all_parents[0].female.clone() {
+                None => {},
+                Some(z) => {
+                    let ret_i32 = get_year_of_child(z.clone());
+                    if ret_i32 > parent_year {
+                        parent_year = ret_i32;
+                    }
+                }
+            }
+            return parent_year-25;
+        }
+        return parent_year;
+    }else { return 0 }
 }
 
 pub fn get_year(person: Person) -> (f32, String) {
     match person.clone().birthday {
         None => { 
-            let (ret_float, ret_string) = get_year_of_child(person.clone());
-            if ret_float != 0.0 { return (ret_float, ret_string); }
-            else { return get_year_of_parent(person.clone()); }
+            let ret_i32 = get_year_of_child(person.clone());
+            if ret_i32 != 0 { 
+                return (translate(ret_i32-25, 1850, 2050, 0, -25), (ret_i32-25).to_string()) ; 
+            } else { 
+                let ret_i32 = get_year_of_parent(person.clone()); 
+                if ret_i32 != 0 { 
+                    return (translate(ret_i32+25, 1850, 2050, 0, -25), (ret_i32+25).to_string()) ; 
+                }else{
+                    return (translate(1850, 1850, 2050, 0, -25), 1850.to_string()) ;  
+                }
+            }
         },
         Some(z) => {
             if z.is_empty() { 
-                let (ret_float, ret_string) = get_year_of_child(person.clone());
-                if ret_float != 0.0 { return (ret_float, ret_string); }
-                else { return get_year_of_parent(person.clone()); }
+                let ret_i32 = get_year_of_child(person.clone());
+                if ret_i32 != 0 { 
+                    return (translate(ret_i32-25, 1850, 2050, 0, -25), (ret_i32-25).to_string()) ; 
+                } else { 
+                    let ret_i32 = get_year_of_parent(person.clone()); 
+                    if ret_i32 != 0 { 
+                        return (translate(ret_i32+25, 1850, 2050, 0, -25), (ret_i32+25).to_string()) ; 
+                    }else{
+                        return (translate(1850, 1850, 2050, 0, -25), 1850.to_string()) ;  
+                    }
+                }
             }else {
                 let year: i32 = get_year_from_birthday(z);
-                return (translate(year, 1850, 2050, 0, -25), year.to_string()) 
+                if year != 0 {
+                    return (translate(year, 1850, 2050, 0, -25), year.to_string()) ;
+                }else{
+                    let ret_i32 = get_year_of_child(person.clone());
+                    if ret_i32 != 0 { 
+                        return (translate(ret_i32-25, 1850, 2050, 0, -25), (ret_i32-25).to_string()) ; 
+                    } else { 
+                        let ret_i32 = get_year_of_parent(person.clone()); 
+                        if ret_i32 != 0 { 
+                            return (translate(ret_i32+25, 1850, 2050, 0, -25), (ret_i32+25).to_string()) ; 
+                        }else{
+                            return (translate(1850, 1850, 2050, 0, -25), 1850.to_string()) ;  
+                        }
+                    }
+                }
+                
             }
         },
     }
