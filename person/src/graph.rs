@@ -90,7 +90,6 @@ fn get_year_from_birthday(mut birthday: String) -> i32 {
 fn get_year_of_child(person: Person) -> (f32, String) {
     let all_children: Vec<Person> = crate::person::get_all_children(person.clone());
     if all_children.len() > 0 {
-        let mut child: Person = all_children[0].clone();
         let mut children_year: i32 = 10000;
 
         for i in 0..all_children.len() {
@@ -102,26 +101,76 @@ fn get_year_of_child(person: Person) -> (f32, String) {
                         if year_i32 == 0 {
                             println!("{} has no correct birthday value", crate::person::get_person_names(Some(all_children[i].clone())));
                         }else if year_i32 < children_year{
-                            child = all_children[i].clone();
                             children_year = year_i32;
                         }
                     }
                 }
             }
         }
-        return (translate(children_year-25, 1850, 2050, 0, -20), (children_year-25).to_string());
+        return (translate(children_year-25, 1850, 2050, 0, -25), (children_year-25).to_string());
+    }else { return (0.0, (0.0).to_string()) }
+}
+
+fn get_year_of_parent(person: Person) -> (f32, String) {
+    let all_parents: Vec<Relation> = crate::db::person_to_relations(Some(person.clone()), 1);
+    if all_parents.len() > 0 {
+        let mut parent_year: i32 = 0;
+
+        match all_parents[0].male.clone() {
+            None => {},
+            Some(z) => {
+                match z.clone().birthday{
+                    None => {},
+                    Some(geb) => {
+                        if !geb.is_empty() {
+                            let year_i32: i32 = get_year_from_birthday(geb);
+                            if year_i32 == 0 {
+                                println!("{} has no correct birthday value", crate::person::get_person_names(Some(z.clone())));
+                            }else {
+                                parent_year = year_i32;
+                            }
+                        }
+                    },
+                }
+            }
+        }
+        match all_parents[0].female.clone() {
+            None => {},
+            Some(z) => {
+                match z.clone().birthday{
+                    None => {},
+                    Some(geb) => {
+                        if !geb.is_empty() {
+                            let year_i32: i32 = get_year_from_birthday(geb);
+                            if year_i32 == 0 {
+                                println!("{} has no correct birthday value", crate::person::get_person_names(Some(z.clone())));
+                            }else if year_i32 > parent_year {
+                                parent_year = year_i32;
+                            }
+                        }
+                    },
+                }
+            }
+        }
+        return (translate(parent_year+25, 1850, 2050, 0, -25), (parent_year+25).to_string());
     }else { return (0.0, (0.0).to_string()) }
 }
 
 pub fn get_year(person: Person) -> (f32, String) {
     match person.clone().birthday {
-        None => { return get_year_of_child(person.clone()) },
+        None => { 
+            let (ret_float, ret_string) = get_year_of_child(person.clone());
+            if ret_float != 0.0 { return (ret_float, ret_string); }
+            else { return get_year_of_parent(person.clone()); }
+        },
         Some(z) => {
             if z.is_empty() { 
-                return get_year_of_child(person.clone())
+                let (ret_float, ret_string) = get_year_of_child(person.clone());
+                if ret_float != 0.0 { return (ret_float, ret_string); }
+                else { return get_year_of_parent(person.clone()); }
             }else {
                 let year: i32 = get_year_from_birthday(z);
-                return (translate(year, 1850, 2050, 0, -20), year.to_string()) 
+                return (translate(year, 1850, 2050, 0, -25), year.to_string()) 
             }
         },
     }
@@ -183,6 +232,7 @@ pub fn graph_edge(posx: f32, edge_höhe: f32) -> String {
     return ret;
 }
 
+#[allow(dead_code)]
 fn connect(x: i32, year: f32, breit: i32, edge_höhe: f32, f_höhe: f32, m_höhe: f32) -> String {
     let mut ret: String = String::new();
     ret.push_str(&form((x-breit) as f32, f_höhe));
@@ -201,6 +251,7 @@ fn connect(x: i32, year: f32, breit: i32, edge_höhe: f32, f_höhe: f32, m_höhe
     return ret;
 }
 
+#[allow(dead_code)]
 fn one_relation(x: i32, main: Option<Person>, cur_gen:i32, mode: i32) -> String{
     if cur_gen < 2 { return "".to_string() }
     let mut ret: String = String::new();
@@ -313,7 +364,7 @@ pub fn graph(mut cur_gen: i32){
 
     let gra: String = String::from(format!("digraph P {{
     edge [dir=forward, arrowhead=none];
-    node [fontsize=11, fixedsize=true, height=1.5, width=1.5];"));
+    node [fontsize=11, fixedsize=true, height=1.5, width=1.5];\n\n"));
     // y1900 [shape=none, label=\"1900\", pos=\"-{h},{y1900}!\"];
     // y2000 [shape=none, label=\"2000\", pos=\"-{h},{y2000}!\"];
     // y0 [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"{h},{y1900}!\"];
@@ -325,7 +376,7 @@ pub fn graph(mut cur_gen: i32){
     let mut file = std::fs::File::create("data.dot").expect("create failed");
 
     // 1 -> 0, 2 -> 1, 3 -> 2, 4 -> 4, 5 -> 8, 6 -> 16 :: (2^cur_gen-2)
-    let mode:i32 = 1; // 0: no mode, 1: child, 2: male, 3: female
+    // let mode:i32 = 1; // 0: no mode, 1: child, 2: male, 3: female
 
     file.write_all(gra.as_bytes()).expect("write failed");
     //file.write_all(one_relation(0, crate::person::search(), cur_gen, mode).as_bytes()).expect("write failed");
