@@ -45,7 +45,10 @@ pub fn matrix_to_string(max_generation: i32) -> String{
     let mut relation: Vec<i32> = Vec::new();
     
     (matrix, relation) = person_into_matrix( p, matrix, 0, BREIT-1, 0, 1, max_generation, relation); // get every person related to p in the matrix
+
+    print_matrix(matrix.clone());
     
+    matrix = test(matrix);
     matrix = reduce_matrix(matrix); // reduce every useless row or column
 
     print_matrix(matrix.clone());
@@ -54,6 +57,29 @@ pub fn matrix_to_string(max_generation: i32) -> String{
     // convert the matrix to 2 Hashmaps with person_id and x-positions and a Vector of every connection that needs to be made
 
     hashmaps_to_dot(map, unknown, relation) // convert the 2 Hashmaps and the Vector to the dot language and return it
+//    String::new()
+}
+
+fn test(matrix: [[i32;BREIT];TIEF]) -> [[i32;BREIT];TIEF] {
+    let mut tiefste_person = 0;
+    for i in 1..=TIEF { // row count of the deepest person
+        if tiefste_person == 0 { for j in 0..matrix[TIEF-i].len() { if matrix[TIEF-i][j] != -1 { tiefste_person = TIEF - i; break} } }
+        else { break }
+    } 
+
+    let mut temp_matrix:[[i32;BREIT];TIEF] = [[-1;BREIT];TIEF];
+    temp_matrix[tiefste_person] = matrix[tiefste_person];
+    let mut temp_j: usize = 1;
+    for i in 1..=tiefste_person {
+        println!("{:?}", matrix[tiefste_person-i]);
+        for j in 0..matrix[tiefste_person-i].len() - temp_j {
+            temp_matrix[tiefste_person-i][temp_j+j] = matrix[tiefste_person-i][j];
+        }
+        temp_j += 1;
+    }
+
+
+    temp_matrix
 }
 
 fn restructure_children(matrix: [[i32;BREIT];TIEF], relation: Vec<i32>) -> (HashMap<i32, f32>, HashMap<i32, f32>, Vec<i32>) { 
@@ -74,7 +100,7 @@ fn restructure_children(matrix: [[i32;BREIT];TIEF], relation: Vec<i32>) -> (Hash
     let mut dict_second: f32;
     let mut unknown_insert: bool = false;
 
-    // walking the matrix from the bottom and saving the two persons next to each other (partners)
+    // walking the matrix from the bottom and the two persons next to each other (partners)
     for k in 0..tiefste_person {
         for i in 0..matrix[tiefste_person-k].len() {
             if matrix[tiefste_person-k][i] != -1 {
