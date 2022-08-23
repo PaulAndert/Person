@@ -17,110 +17,82 @@ impl Relation {
     }
 }
 
-pub fn change(mut p: Option<Relation>) -> (Option<Relation>, bool) {
+pub fn change(mut relation: Relation) -> (Relation, bool) {
     let mut line: String = String::new();
     println!("for changes type the number you want to change, else press enter");
     let n = std::io::stdin().read_line(&mut line).unwrap();
     if n <= 1 {
-        return (p, false);
+        return (relation, false);
     } else if n >= 3 {
         line.pop();
         println!("{} is not a valid number", line);
-        return (p, true);
+        return (relation, true);
     }else{
         match line.chars().next() {
-            None => return (p, true),
-            Some('1') => {
-                match p{
-                    None => {},
-                    Some(ref mut z) => z.male = crate::person::search(),
-                }
-            },
-            Some('2') => {
-                match p{
-                    None => {},
-                    Some(ref mut z) => z.female = crate::person::search(),
-                }
-            },
-            Some('3') => {
-                match p{
-                    None => {},
-                    Some(ref mut z) => z.child = crate::person::search(),
-                }
-            },
+            None => return (relation, true),
+            Some('1') => { relation.male = Some(crate::person::search()) },
+            Some('2') => { relation.female = Some(crate::person::search()) },
+            Some('3') => { relation.child = Some(crate::person::search()) },
             Some(_) => {
                 line.pop();
                 println!("{} is not a valid number", line);
             },
         }
-        return (p, true);
+        return (relation, true);
     }
 }
 
-fn check(relation: Option<Relation>) -> bool{
-    match relation{
-        None => return false,
-        Some(z) => {
-            let mut cnt: i32 = 0;
-            if z.male.is_some() { cnt += 1 }
-            if z.female.is_some() { cnt += 1 }
-            if z.child.is_some() { cnt += 1 }
-            if cnt >= 2 { return true }
-            else{ return false }
-        }
-    }
+fn check(relation: Relation) -> bool{
+    let mut cnt: i32 = 0;
+    if relation.male.is_some() { cnt += 1 }
+    if relation.female.is_some() { cnt += 1 }
+    if relation.child.is_some() { cnt += 1 }
+    if cnt >= 2 { return true }
+    else{ return false }
 }
 
-pub fn create() -> Option<Relation>{
-    let mut new_relation: Option<Relation> = Some(Relation::new());
-
-    let mut boo: bool = true;
-    while boo{
+pub fn create() -> Relation{
+    let mut new_relation: Relation = Relation::new();
+    loop {
         println!("\n\nNewly created Relation:");
         print(new_relation.clone());
-        (new_relation, boo) = change(new_relation.clone());
-        if !boo && !check(new_relation.clone()) {
-            println!("!! You need at least 2 persons for a relation");
-            boo = true;
+        let boo: bool;
+        (new_relation, boo) = change(new_relation);
+        if !boo {
+            if !check(new_relation.clone()) { println!("!! You need at least 2 persons for a relation") }
+            else { return new_relation }
         }
     }
-    return new_relation;
 }
 
-pub fn print(relation: Option<Relation>) {
+pub fn print(relation: Relation) {
     let mut per : String = String::new();
-    match relation {
-        None => per.push_str("No relation found"),
-        Some(relation) => {
-            
-            per.push_str("[1] Male: ");
-            match &relation.male {
-                None => per.push_str("--"),
-                Some(_) => per.push_str(&crate::person::get_person_names(relation.male)),
-            };
+    per.push_str("[1] Male: ");
+    match relation.male {
+        None => per.push_str("--"),
+        Some(z) => per.push_str(&crate::person::get_all_4_names(z)),
+    };
 
-            per.push_str("\n[2] Female: ");
-            match &relation.female {
-                None => per.push_str("--"),
-                Some(_) => per.push_str(&crate::person::get_person_names(relation.female)),
-            };
+    per.push_str("\n[2] Female: ");
+    match relation.female {
+        None => per.push_str("--"),
+        Some(z) => per.push_str(&crate::person::get_all_4_names(z)),
+    };
 
-            per.push_str("\n[3] Child: ");
-            match &relation.child {
-                None => per.push_str("--"),
-                Some(_) => per.push_str(&crate::person::get_person_names(relation.child)),
-            };
-        },
-    }
+    per.push_str("\n[3] Child: ");
+    match relation.child {
+        None => per.push_str("--"),
+        Some(z) => per.push_str(&crate::person::get_all_4_names(z)),
+    };
     println!("{}", per);
 }
 
-pub fn search() -> Option<Relation> {
+pub fn search() -> Relation {
     let mut results: Vec<Relation>;
     loop {
         println!("Please enter a person who is in that relation (until there is only one relation left)");
-        results = crate::db::person_to_relations(crate::person::search(), 0);
-        if results.clone().len() == 1 { return Some(results[0].clone()) }
+        results = crate::db::person_id_to_relations(crate::person::search().person_id, 0);
+        if results.clone().len() == 1 { return results[0].clone() }
         else{ crate::relation::print_vector(results) }
     }
 }
@@ -130,6 +102,6 @@ pub fn print_vector(all: Vec<Relation>) {
     for relation in all.iter() {
         cnt += 1;
         println!("Relation no. {}", cnt);
-        print(Some(relation.clone()));
+        print(relation.clone());
     }
 }

@@ -16,42 +16,14 @@ impl Person {
     pub fn new () -> Person {
         return Person{
             person_id: -1,
-            first_name: Some(String::new()),
-            middle_name: Some(String::new()),
-            surname: Some(String::new()),
-            maiden_name: Some(String::new()),
-            gender: Some(String::new()),
-            birthday: Some(String::new()),
-            deathday: Some(String::new()),
+            first_name: None,
+            middle_name: None,
+            surname: None,
+            maiden_name: None,
+            gender: None,
+            birthday: None,
+            deathday: None,
         };
-    }
-    pub fn first_name(&mut self, first_name: Option<String>) -> &mut Self {
-        self.first_name = first_name;
-        self
-    }
-    pub fn middle_name(&mut self, middle_name: Option<String>) -> &mut Self {
-        self.middle_name = middle_name;
-        self
-    }
-    pub fn surname(&mut self, surname: Option<String>) -> &mut Self {
-        self.surname = surname;
-        self
-    }
-    pub fn maiden_name(&mut self, maiden_name: Option<String>) -> &mut Self {
-        self.maiden_name = maiden_name;
-        self
-    }
-    pub fn gender(&mut self, gender: Option<String>) -> &mut Self {
-        self.gender = gender;
-        self
-    }
-    pub fn birthday(&mut self, birthday: Option<String>) -> &mut Self {
-        self.birthday = birthday;
-        self
-    }
-    pub fn deathday(&mut self, deathday: Option<String>) -> &mut Self {
-        self.deathday = deathday;
-        self
     }
 }
 
@@ -69,97 +41,48 @@ fn question(old_string: Option<String>, number: i32, question: String) -> Option
     }
 }
 
-pub fn change(mut p: Option<Person>) -> (Option<Person>, bool) {
+pub fn change(mut person: Person) -> (Person, bool) {
     let mut line: String = String::new();
     println!("for changes type the number you want to change, else press enter");
     let n = std::io::stdin().read_line(&mut line).unwrap();
     if n <= 1 {
-        return (p, false);
+        return (person, false);
     } else if n >= 3 {
         line.pop();
         println!("{} is not a valid number", line);
-        return (p, true);
+        return (person, true);
     }else{
         match line.chars().next() {
-            None => return (p, true),
-            Some('1') => {
-                match p{
-                    None => {},
-                    Some(ref mut z) => z.first_name = question(z.first_name.clone(), 1, "First name".to_string()),
-                }
-            },
-            Some('2') => {
-                match p{
-                    None => {},
-                    Some(ref mut z) => z.middle_name = question(z.middle_name.clone(), 2, "Middle name".to_string()),
-                }
-            },
-            Some('3') => {
-                match p{
-                    None => {},
-                    Some(ref mut z) => z.surname = question(z.surname.clone(), 3, "Surname".to_string()),
-                }
-            },
-            Some('4') => {
-                match p{
-                    None => {},
-                    Some(ref mut z) => z.maiden_name = question(z.maiden_name.clone(), 4, "Maiden name".to_string()),
-                }
-            },
-            Some('5') => {
-                match p{
-                    None => {},
-                    Some(ref mut z) => z.gender = question(z.gender.clone(), 5, "Gender".to_string()),
-                }
-            },
-            Some('6') => {
-                match p{
-                    None => {},
-                    Some(ref mut z) => z.birthday = question(z.birthday.clone(), 6, "Birthday".to_string()),
-                }
-            },
-            Some('7') => {
-                match p{
-                    None => {},
-                    Some(ref mut z) => z.deathday = question(z.deathday.clone(), 7, "Deathday".to_string()),
-                }
-            },
+            None => return (person, true),
+            Some('1') => { person.first_name = question(person.first_name.clone(), 1, "First name".to_string()) },
+            Some('2') => { person.middle_name = question(person.middle_name.clone(), 2, "Middle name".to_string()) },
+            Some('3') => { person.surname = question(person.surname.clone(), 3, "Surname".to_string()) },
+            Some('4') => { person.maiden_name = question(person.maiden_name.clone(), 4, "Maiden name".to_string()) },
+            Some('5') => { person.gender = question(person.gender.clone(), 5, "Gender".to_string()) },
+            Some('6') => { person.birthday = question(person.birthday.clone(), 6, "Birthday".to_string()) },
+            Some('7') => { person.deathday = question(person.deathday.clone(), 7, "Deathday".to_string()) },
             Some(_) => {
                 line.pop();
                 println!("{} is not a valid number", line);
             },
         }
-        return (p, true);
+        return (person, true);
     }
 }
 
-pub fn create() -> Option<Person>{
-    let mut new_person: Option<Person> = Some(Person::new());
-
-    // new_person.clone().map(|mut s| { 
-    //     s.first_name( question(None, 1, "First name".to_string())); 
-    //     s.middle_name( question(None, 2, "Middle name".to_string()));
-    //     s.surname( question(None, 3, "Surname".to_string()));
-    //     s.maiden_name( question(None, 4, "Maiden name".to_string()));
-    //     s.gender( question(None, 5, "Gender".to_string()));
-    //     s.birthday( question(None, 6, "Birthday".to_string()));
-    //     s.deathday( question(None, 7, "Deathday".to_string()));
-    //     s});
-
-    let mut boo: bool = true;
-    while boo{
+pub fn create() -> Person{
+    let person: Person = Person::new();
+    loop {
         println!("\n\nNewly created Person:");
-        print(new_person.clone());
-        (new_person, boo) = change(new_person.clone());
+        print(person.clone());
+        let (person, boo) = change(person.clone());
+        if !boo { return person }
     }
-    return new_person;
 }
 
-pub fn search() -> Option<Person> {
-    let mut boo: bool = true;
+pub fn search() -> Person {
     let mut results: Vec<Person>;
-    let mut search: Option<Person> = None;
-    while boo{
+    loop {
         let mut line: String = String::new();
         println!("Who are you searching? Please enter the First Name and/or Last Name or their Id");
         let _ = std::io::stdin().read_line(&mut line).unwrap();
@@ -169,21 +92,19 @@ pub fn search() -> Option<Person> {
                 let(a, _) = crate::mixed_to_single(line.clone(), 1);
                 let id: i32 = a.parse::<i32>().unwrap();
                 if id > 0 {
-                    results = crate::db::id_to_person(id);
-                    if results.len() < 1 {  println!("there is nobody with that id, please try again"); }
-                    else {
-                        print_names(Some(results[0].clone()));
-                        line.clear();
-                        println!("Is that the correct person? Press enter if true or any key if false");
-                        let _ = std::io::stdin().read_line(&mut line).unwrap();
-                        line.pop();
-                        match line.chars().next() {
-                            None => {
-                                search = Some(results[0].clone());
-                                boo = false;
-                            },
-                            Some(_) => {},
-                        }
+                    match crate::db::id_to_person(id) {
+                        None => { println!("there is nobody with that id, please try again"); },
+                        Some(z) => {
+                            print_all_4_names(z.clone());
+                            line.clear();
+                            println!("Is that the correct person? Press enter if true or any key if false");
+                            let _ = std::io::stdin().read_line(&mut line).unwrap();
+                            line.pop();
+                            match line.chars().next() {
+                                None => { return z; }, // if enter is pressed 
+                                Some(_) => {},
+                            }
+                        },
                     }
                 }
             },
@@ -194,162 +115,146 @@ pub fn search() -> Option<Person> {
                     Some(z) => results = crate::db::double_name_person(a, z),
                 }
                 if results.len() < 1 { println!("there is nobody with that name, please try again"); }
-                else{ print_vector_names(results); }
+                else{ print_vector_only_names(results); }
             },
-            _ => {},     
+            _ => { /* because boo is still true the loop is still going and there is no need for error handling here */ },     
         }
     }
-    return search;
 }
 
 pub fn print_vector(all: Vec<Person>) {
-    for person in all.iter() {
-        print(Some(person.clone()));
+    for i in 0..all.len() {
+        print(all[i].clone());
     }
 }
 
-pub fn print(person: Option<Person>) {
-    let mut per : String = String::new();
-    match person {
-        None => per.push_str("No person found"),
-        Some(person) => {
-            per.push_str("Person No. ");
-            per.push_str(&person.person_id.to_string());
+pub fn print(person: Person) {
+    let mut per: String = String::new();
+    per.push_str("Person No. ");
+    per.push_str(&person.person_id.to_string());
 
-            per.push_str("\n[1] First name: ");
-            match &person.first_name {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-
-            per.push_str("\n[2] Middle name: ");
-            match &person.middle_name {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-
-            per.push_str("\n[3] Surname: ");
-            match &person.surname {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-
-            per.push_str("\n[4] Maiden name: ");
-            match &person.maiden_name {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-
-            per.push_str("\n[5] Gender: ");
-            match &person.gender {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-
-            per.push_str("\n[6] Birthday: ");
-            match &person.birthday {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-
-            per.push_str("\n[7] Deathday: ");
-            match &person.deathday {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
+    per.push_str("\n[1] First name: ");
+    match person.first_name {
+        None => per.push_str("--"),
+        Some(z) => {
+            if z.is_empty() { per.push_str("--"); }
+            else { per.push_str(&z) }
         },
-    }
+    };
+
+    per.push_str("\n[2] Middle name: ");
+    match person.middle_name {
+        None => per.push_str("--"),
+        Some(z) => {
+            if z.is_empty() { per.push_str("--"); }
+            else { per.push_str(&z) }
+        },
+    };
+
+    per.push_str("\n[3] Surname: ");
+    match person.surname {
+        None => per.push_str("--"),
+        Some(z) => {
+            if z.is_empty() { per.push_str("--"); }
+            else { per.push_str(&z) }
+        },
+    };
+
+    per.push_str("\n[4] Maiden name: ");
+    match person.maiden_name {
+        None => per.push_str("--"),
+        Some(z) => {
+            if z.is_empty() { per.push_str("--"); }
+            else { per.push_str(&z) }
+        },
+    };
+
+    per.push_str("\n[5] Gender: ");
+    match person.gender {
+        None => per.push_str("--"),
+        Some(z) => {
+            if z.is_empty() { per.push_str("--"); }
+            else { per.push_str(&z) }
+        },
+    };
+
+    per.push_str("\n[6] Birthday: ");
+    match person.birthday {
+        None => per.push_str("--"),
+        Some(z) => {
+            if z.is_empty() { per.push_str("--"); }
+            else { per.push_str(&z) }
+        },
+    };
+
+    per.push_str("\n[7] Deathday: ");
+    match person.deathday {
+        None => per.push_str("--"),
+        Some(z) => {
+            if z.is_empty() { per.push_str("--"); }
+            else { per.push_str(&z) }
+        },
+    };
     println!("{}", per);
 }
 
-pub fn print_vector_names(all: Vec<Person>) {
+pub fn print_vector_only_names(all: Vec<Person>) {
     for person in all.iter() {
-        print_names(Some(person.clone()));
+        print_all_4_names(person.clone());
     }
 }
 
-pub fn get_person_names(person: Option<Person>) -> String{
-    let mut per : String = String::new();
-    match person {
-        None => per.push_str("No person found"),
-        Some(person) => {
-            per.push('[');
-            per.push_str(&person.person_id.to_string());
-            per.push_str("] ");
-
-            per.push_str(&vor_zweit_nach(Some(person.clone())));
-            match &person.maiden_name {
-                Some(z) => {
-                    if !z.is_empty() {  
-                        per.push_str(" (");
-                        per.push_str(z);
-                        per.push(')');
-                    }
-                },
-                _ => { per.push(' ') },
-            };
-        },
-    }
-    return per;
+pub fn print_all_4_names(person: Person){ 
+    println!("{}", get_all_4_names(person)); 
 }
 
-pub fn print_names(person: Option<Person>){ println!("{}", get_person_names(person)); }
-
-pub fn vor_zweit_nach(person: Option<Person>) -> String{
+pub fn get_all_4_names(person: Person) -> String{
     let mut per : String = String::new();
-    match person {
-        None => per.push_str("No person found"),
-        Some(person) => {
-        
-            match &person.first_name {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
-            match &person.middle_name {
-                None => {},
-                Some(z) => {
-                    if !z.is_empty() { 
-                        per.push(' ');
-                        per.push_str(z);
-                    }
-                },
-            };
+    per.push('[');
+    per.push_str(&person.person_id.to_string());
+    per.push_str("] ");
 
-            per.push(' ');
-            match &person.surname {
-                None => per.push_str("--"),
-                Some(z) => {
-                    if z.is_empty() { per.push_str("--"); }
-                    else { per.push_str(z) }
-                },
-            };
+    per.push_str(&get_3_names(person.clone()));
+    match person.maiden_name {
+        Some(z) => {
+            if !z.is_empty() {  
+                per.push_str(" (");
+                per.push_str(&z);
+                per.push(')');
+            }
         },
-    }
-    return per;
+        _ => { per.push(' ') },
+    };
+    per
+}
+
+pub fn get_3_names(person: Person) -> String{
+    let mut per: String = String::new();
+    match person.first_name {
+        None => per.push_str("--"),
+        Some(z) => {
+            if z.is_empty() { per.push_str("--"); }
+            else { per.push_str(&z) }
+        },
+    };
+    match person.middle_name {
+        None => {},
+        Some(z) => {
+            if !z.is_empty() { 
+                per.push(' ');
+                per.push_str(&z);
+            }
+        },
+    };
+    per.push(' ');
+    match person.surname {
+        None => per.push_str("--"),
+        Some(z) => {
+            if z.is_empty() { per.push_str("--"); }
+            else { per.push_str(&z) }
+        },
+    };
+    per
 }
 
 pub fn get_all_children(person: Person) -> Vec<Person> {
@@ -358,13 +263,12 @@ pub fn get_all_children(person: Person) -> Vec<Person> {
         None=>{},
         Some(z)=>{
             let all_rela: Vec<Relation>;
-            if z == "m"{
-                all_rela = crate::db::person_to_relations(Some(person.clone()), 2);
-            }else if z == "f"{
-                all_rela = crate::db::person_to_relations(Some(person.clone()), 3);
-            }else{
-                all_rela = Vec::new();
-            }
+            if z == "m"{ all_rela = crate::db::person_id_to_relations(person.person_id, 2) }
+            else if z == "f"{ all_rela = crate::db::person_id_to_relations(person.person_id, 3) }
+            else if z == "um"{ all_rela = crate::db::person_id_to_relations(person.person_id, 3) }
+            else if z == "uf"{ all_rela = crate::db::person_id_to_relations(person.person_id, 2) }
+            else{ all_rela = Vec::new() }
+
             for i in 0..all_rela.len() {
                 match all_rela[i].clone().child {
                     None => {},

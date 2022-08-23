@@ -41,7 +41,7 @@ fn print_matrix(matrix: [[i32;BREIT];TIEF]){ // print the matrix to the console
 pub fn matrix_to_string(max_generation: i32) -> String{
     let mut matrix:[[i32;BREIT];TIEF] = [[-1;BREIT];TIEF]; // create a Matrix full of -1
 
-    let p: Option<Person> = crate::person::search(); // ask what the root person should be
+    let p: Person = crate::person::search(); // ask what the root person should be
     let mut relation: Vec<i32> = Vec::new();
     
     (matrix, relation) = person_into_matrix( p, matrix, 0, BREIT-1, 0, 1, max_generation, relation); // get every person related to p in the matrix
@@ -54,9 +54,10 @@ pub fn matrix_to_string(max_generation: i32) -> String{
         // (p[0].clone(), value*2.0, year_float, year_string));
         for i in 0..matrix[0].len() {
             if matrix[0][i] != -1 {
-                let per: Person = crate::db::id_to_person(matrix[0][i])[0].clone();
-                let (year_float, year_string) = crate::graph::get_year(per.clone());
-                return crate::graph::graph_node(per.clone(), i as f32 * 2.0, year_float, year_string);
+                match crate::db::id_to_person(matrix[0][i]) {
+                    None => {},
+                    Some(z) => { return crate::graph::graph_node(z, i as f32 * 2.0) },
+                }
             }
         }
         return "".to_string();
@@ -292,34 +293,39 @@ fn hashmaps_to_dot(map: HashMap<i32, f32>, unknown: HashMap<i32, f32>, relation:
     for (key, value) in map.clone().drain() {
         if value > biggest { biggest = value }
         if value < smallest { smallest = value }
-        let p: Vec<Person> = crate::db::id_to_person(key);
-        let (year_float, year_string) = crate::graph::get_year(p[0].clone());
-        ret.push_str(&crate::graph::graph_node(p[0].clone(), value*2.0, year_float, year_string));
-        ret.push_str("\n");
+        match crate::db::id_to_person(key) {
+            None => { println!("There is no person with the id: {}", key); },
+            Some(z) => {
+                ret.push_str(&crate::graph::graph_node(z, value*2.0));
+                ret.push_str("\n");
+            },
+        }
     }
     for (key, value) in unknown.clone().drain() {
         if value > biggest { biggest = value }
         if value < smallest { smallest = value }
-        let mut p: Vec<Person> = crate::db::id_to_person(key);
-        let (year_float, year_string) = crate::graph::get_year(p[0].clone());
-        p[0].first_name = Some(String::from("Unknown"));
-        p[0].middle_name = None;
-        p[0].surname = Some(String::from(" "));
-        p[0].maiden_name = None;
-        p[0].gender = match p[0].clone().gender {
-            None => {
-                println!("{} has no gender", p[0].person_id);
-                Some(String::from(" "))
-            },
-            Some(z) => {
-                if z == "f" { Some(String::from("um")) }
-                else { Some(String::from("uf")) }
-            },
-        };
-        ret.push_str(&crate::graph::graph_node(p[0].clone(), value*2.0, year_float, year_string));
-        ret.push_str("\n");
+        match crate::db::id_to_person(key) {
+            None => { println!("There is no person with the id: {}", key); },
+            Some(mut z) => {
+                z.first_name = Some(String::from("Unknown"));
+                z.middle_name = None;
+                z.surname = Some(String::from(" "));
+                z.maiden_name = None;
+                z.gender = match z.clone().gender {
+                    None => {
+                        println!("{} has no gender", z.person_id);
+                        Some(String::from(" "))
+                    },
+                    Some(gender) => {
+                        if gender == "f" { Some(String::from("um")) }
+                        else { Some(String::from("uf")) }
+                    },
+                };
+                ret.push_str(&crate::graph::graph_node(z, value*2.0));
+                ret.push_str("\n");
+            }
+        }
     }
-    //println!("{} und {}", smallest, biggest);
     ret.push_str(&format!("
     y1900 [shape=none, fontsize=25, label=\"1900\", pos=\"{x1},{y1900}!\"];
     y2000 [shape=none, fontsize=25, label=\"2000\", pos=\"{x1},{y2000}!\"];
@@ -328,35 +334,35 @@ fn hashmaps_to_dot(map: HashMap<i32, f32>, unknown: HashMap<i32, f32>, relation:
     y1900 -> y0 [style=dashed, color=\"grey\"] ; y2000 -> y1 [style=dashed, color=\"grey\"]\n\n",
     x1 = (smallest * 2.0 ) - 4.0,
     x2 = (biggest * 2.0 ) + 4.0,
-    y1900 = crate::graph::translate(1900, 1850, 2050, 0, -25),
-    y2000 = crate::graph::translate(2000, 1850, 2050, 0, -25)));
+    y1900 = crate::graph::translate(1900),
+    y2000 = crate::graph::translate(2000)));
 
     let mut one_family: Vec<i32> = Vec::new();
     for i in 0..relation.len(){
         // if we encounter a real id we write it in the one_family vector
         if relation[i] != -1 { one_family.push(relation[i]) } 
-        else {
-            //println!("{:?}", one_family.clone());
-            if one_family.len() > 1 {
-                let year_float_first: f32;
-                let year_float_second: f32;
-                // get the first and second element from one_family and get the year in a transformed float 
-                // if a partner is 0, we take the year from the other partner
-                if one_family[1] == 0 {
-                    (year_float_first, _) = crate::graph::get_year( crate::db::id_to_person( one_family[0] )[0].clone() );
-                    year_float_second = year_float_first.clone();
-                }else if one_family[0] == 0 {
-                    (year_float_second, _) = crate::graph::get_year( crate::db::id_to_person( one_family[1] )[0].clone() );
-                    year_float_first = year_float_second.clone();
-                }else {
-                    (year_float_first, _) = crate::graph::get_year( crate::db::id_to_person( one_family[0] )[0].clone() );
-                    (year_float_second, _) = crate::graph::get_year( crate::db::id_to_person( one_family[1] )[0].clone() );
+        else if one_family.len() > 0 {
+            let mut year_float_first: f32 = 0.0;
+            let mut year_float_second: f32 = 0.0;
+            // get the first and second element from one_family and get the year in a transformed float 
+            // if a partner is 0, we take the year from the other partner
+            let mut first_is_null: bool = false;
+            if one_family[0] != 0 {
+                match crate::db::id_to_person( one_family[0] ) {
+                    None => { println!("There is no person with the id: {}", one_family[0] ) },
+                    Some(z) => { (year_float_first, _) = crate::graph::get_year( z ) },
                 }
-                ret.push_str(&get_string_of_one_family(one_family.clone(), year_float_first, year_float_second, map.clone(), unknown.clone()));
-                one_family.clear();
-            }else if one_family.len() > 0 && i == 0{
+            }else { first_is_null = true }
+            if one_family[1] != 0 {
+                match crate::db::id_to_person( one_family[1] ) {
+                    None => { println!("There is no person with the id: {}", one_family[1] ) },
+                    Some(z) => { (year_float_second, _) = crate::graph::get_year( z ) },
+                }
+                if first_is_null { year_float_first = year_float_second.clone() }
+            }else { year_float_second = year_float_first.clone() }
 
-            }
+            ret.push_str(&get_string_of_one_family(one_family.clone(), year_float_first, year_float_second, map.clone(), unknown.clone()));
+            one_family.clear();
         }
     }
     ret
@@ -371,11 +377,15 @@ fn get_string_of_one_family(one_family: Vec<i32>, year_float_first: f32, year_fl
     let mut children_year: f32 = -10000.0;
     let mut year_float_child: Vec<f32> = Vec::new();
     for j in 2..one_family.len() {
-        let child: Vec<Person> = crate::db::id_to_person(one_family[j]);
-        let (year, _) = crate::graph::get_year(child[0].clone());
-        year_float_child.push(year);
-        if year > children_year {
-            children_year = year;
+        match crate::db::id_to_person(one_family[j]) {
+            None => { println!("There is no person with the id: {}", one_family[j] ); },
+            Some(z) => {
+                let (year, _) = crate::graph::get_year(z);
+                year_float_child.push(year);
+                if year > children_year {
+                    children_year = year;
+                }
+            },
         }
     }
 
@@ -455,8 +465,8 @@ fn get_string_of_one_family(one_family: Vec<i32>, year_float_first: f32, year_fl
     ret
 }
 
-fn person_into_matrix(child: Option<Person>, mut matrix: [[i32;BREIT];TIEF], min_breite: usize, max_breite: usize, tiefe: usize, generation: i32, max_generation: i32, mut relation: Vec<i32>) -> ([[i32;BREIT];TIEF], Vec<i32>) {    
-    let all_rela: Vec<Relation> = crate::db::person_to_relations(child.clone(), 1);
+fn person_into_matrix(child: Person, mut matrix: [[i32;BREIT];TIEF], min_breite: usize, max_breite: usize, tiefe: usize, generation: i32, max_generation: i32, mut relation: Vec<i32>) -> ([[i32;BREIT];TIEF], Vec<i32>) {    
+    let all_rela: Vec<Relation> = crate::db::person_id_to_relations(child.person_id, 1);
     let mut has_children: bool = false;
     let mut all_children: Vec<Person> = Vec::new();
     if all_rela.len() > 0{
@@ -484,17 +494,9 @@ fn person_into_matrix(child: Option<Person>, mut matrix: [[i32;BREIT];TIEF], min
             }
         }
     }else if generation == 1 {
-        match child {
-            None => {},
-            Some(z) => {
-                matrix[tiefe][BREIT/2] = z.person_id;
-                relation.push(z.person_id);
-            }
-        }
+        matrix[tiefe][BREIT/2] = child.person_id;
+        relation.push(child.person_id);
     }
-
-    //crate::person::print_vector(all_children);
-
     for i in 0..all_children.len() {
         matrix[tiefe][i+min_breite] = all_children[i].person_id;
         relation.push(all_children[i].person_id);
@@ -502,11 +504,14 @@ fn person_into_matrix(child: Option<Person>, mut matrix: [[i32;BREIT];TIEF], min
     relation.push(-1);
 
     if all_rela.len() > 0 && generation + 1 <= max_generation{
-        //println!("{}: {} - {} ", match all_rela[0].female.clone() { Some(z) => z.person_id, None=>{0},}, min_breite, (max_breite-1)/2);
-        (matrix, relation) = person_into_matrix(all_rela[0].female.clone(), matrix, min_breite, (max_breite-min_breite-1)/2+min_breite, tiefe+1, generation + 1, max_generation, relation.clone());
-        
-        //println!("{}: {} - {} ", match all_rela[0].male.clone() { Some(z) => z.person_id, None=>{0},}, (max_breite+1)/2, max_breite);
-        (matrix, relation) = person_into_matrix(all_rela[0].male.clone(), matrix, (max_breite-min_breite+1)/2+min_breite, max_breite, tiefe+1, generation + 1, max_generation, relation.clone());
+        match all_rela[0].female.clone() {
+            None => {},
+            Some(z) => { (matrix, relation) = person_into_matrix(z, matrix, min_breite, (max_breite-min_breite-1)/2+min_breite, tiefe+1, generation + 1, max_generation, relation.clone()) },
+        }
+        match all_rela[0].male.clone() {
+            None => {},
+            Some(z) => { (matrix, relation) = person_into_matrix(z, matrix, (max_breite-min_breite+1)/2+min_breite, max_breite, tiefe+1, generation + 1, max_generation, relation.clone()) },
+        }
     }
-    return (matrix, relation);
+    (matrix, relation)
 }
