@@ -71,7 +71,7 @@ pub fn form(posx: f32, year: f32) -> String {
     return ret;
 }
 
-fn translate(value: i32, left_min: i32, left_max: i32, right_min: i32, right_max: i32) -> f32 {
+pub fn translate(value: i32, left_min: i32, left_max: i32, right_min: i32, right_max: i32) -> f32 {
     let left_span: f32 = (left_max - left_min) as f32;
     let right_span: f32 = (right_max - right_min) as f32;
     let value_scaled: f32 = (value as f32 - left_min as f32) / left_span;
@@ -183,13 +183,13 @@ pub fn get_year(person: Person) -> (f32, String) {
         None => { 
             let ret_i32 = get_year_of_child(person.clone());
             if ret_i32 != 0 { 
-                return (translate(ret_i32-25, 1850, 2050, 0, -25), (ret_i32-25).to_string()) ; 
+                return (translate(ret_i32-25, 1850, 2050, 0, -25), String::from("Unknown")) ; 
             } else { 
                 let ret_i32 = get_year_of_parent(person.clone()); 
                 if ret_i32 != 0 { 
-                    return (translate(ret_i32+25, 1850, 2050, 0, -25), (ret_i32+25).to_string()) ; 
+                    return (translate(ret_i32+25, 1850, 2050, 0, -25), String::from("Unknown")) ; 
                 }else{
-                    return (translate(1850, 1850, 2050, 0, -25), 1850.to_string()) ;  
+                    return (translate(1850, 1850, 2050, 0, -25), String::from("Unknown")) ;  
                 }
             }
         },
@@ -197,13 +197,13 @@ pub fn get_year(person: Person) -> (f32, String) {
             if z.is_empty() { 
                 let ret_i32 = get_year_of_child(person.clone());
                 if ret_i32 != 0 { 
-                    return (translate(ret_i32-25, 1850, 2050, 0, -25), (ret_i32-25).to_string()) ; 
+                    return (translate(ret_i32-25, 1850, 2050, 0, -25), String::from("Unknown")) ; 
                 } else { 
                     let ret_i32 = get_year_of_parent(person.clone()); 
                     if ret_i32 != 0 { 
-                        return (translate(ret_i32+25, 1850, 2050, 0, -25), (ret_i32+25).to_string()) ; 
+                        return (translate(ret_i32+25, 1850, 2050, 0, -25), String::from("Unknown")) ; 
                     }else{
-                        return (translate(1850, 1850, 2050, 0, -25), 1850.to_string()) ;  
+                        return (translate(1850, 1850, 2050, 0, -25), String::from("Unknown")) ;  
                     }
                 }
             }else {
@@ -213,13 +213,13 @@ pub fn get_year(person: Person) -> (f32, String) {
                 }else{
                     let ret_i32 = get_year_of_child(person.clone());
                     if ret_i32 != 0 { 
-                        return (translate(ret_i32-25, 1850, 2050, 0, -25), (ret_i32-25).to_string()) ; 
+                        return (translate(ret_i32-25, 1850, 2050, 0, -25), String::from("Unknown")) ; 
                     } else { 
                         let ret_i32 = get_year_of_parent(person.clone()); 
                         if ret_i32 != 0 { 
-                            return (translate(ret_i32+25, 1850, 2050, 0, -25), (ret_i32+25).to_string()) ; 
+                            return (translate(ret_i32+25, 1850, 2050, 0, -25), String::from("Unknown")) ; 
                         }else{
-                            return (translate(1850, 1850, 2050, 0, -25), 1850.to_string()) ;  
+                            return (translate(1850, 1850, 2050, 0, -25), String::from("Unknown")) ;  
                         }
                     }
                 }

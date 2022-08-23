@@ -132,7 +132,7 @@ pub fn update_person(person: Option<Person>){
 pub fn single_name_person(name: String) -> Vec<Person>{
     let mut selec: String = String::from("SELECT * from person where first_name like '%");
     selec.push_str(&name);
-    selec.push_str("%' or surname = '%;");
+    selec.push_str("%' or surname like '%");
     selec.push_str(&name);
     selec.push_str("%';");
 

@@ -48,20 +48,30 @@ pub fn matrix_to_string(max_generation: i32) -> String{
 
     //print_matrix(matrix.clone());
     
-    matrix = test(matrix);
-    matrix = reduce_matrix(matrix); // reduce every useless row or column
+    let tiefste_person: usize;
+    (matrix, tiefste_person) = test(matrix);
+    if tiefste_person == 0 {
+        // (p[0].clone(), value*2.0, year_float, year_string));
+        for i in 0..matrix[0].len() {
+            if matrix[0][i] != -1 {
+                let per: Person = crate::db::id_to_person(matrix[0][i])[0].clone();
+                let (year_float, year_string) = crate::graph::get_year(per.clone());
+                return crate::graph::graph_node(per.clone(), i as f32 * 2.0, year_float, year_string);
+            }
+        }
+        return "".to_string();
+    }else{
+        matrix = reduce_matrix(matrix); // reduce every useless row or column
 
-    //print_matrix(matrix.clone());
+        let (map, unknown, relation) = restructure_children(matrix, relation); 
+        // convert the matrix to 2 Hashmaps with person_id and x-positions and a Vector of every connection that needs to be made
 
-    let (map, unknown, relation) = restructure_children(matrix, relation); 
-    // convert the matrix to 2 Hashmaps with person_id and x-positions and a Vector of every connection that needs to be made
-
-    hashmaps_to_dot(map, unknown, relation) // convert the 2 Hashmaps and the Vector to the dot language and return it
-//    String::new()
+        hashmaps_to_dot(map, unknown, relation) // convert the 2 Hashmaps and the Vector to the dot language and return it
+    }
 }
 
-fn test(matrix: [[i32;BREIT];TIEF]) -> [[i32;BREIT];TIEF] {
-    let mut tiefste_person = 0;
+fn test(matrix: [[i32;BREIT];TIEF]) -> ([[i32;BREIT];TIEF], usize) {
+    let mut tiefste_person: usize = 0;
     for i in 1..=TIEF { // row count of the deepest person
         if tiefste_person == 0 { for j in 0..matrix[TIEF-i].len() { if matrix[TIEF-i][j] != -1 { tiefste_person = TIEF - i; break} } }
         else { break }
@@ -77,9 +87,7 @@ fn test(matrix: [[i32;BREIT];TIEF]) -> [[i32;BREIT];TIEF] {
         }
         temp_j += 1;
     }
-
-
-    temp_matrix
+    (temp_matrix, tiefste_person)
 }
 
 fn restructure_children(matrix: [[i32;BREIT];TIEF], relation: Vec<i32>) -> (HashMap<i32, f32>, HashMap<i32, f32>, Vec<i32>) { 
@@ -278,14 +286,20 @@ fn hashmaps_to_dot(map: HashMap<i32, f32>, unknown: HashMap<i32, f32>, relation:
     let mut ret: String = String::new();
 
     //println!("{:?}", relation.clone());
+    let mut biggest: f32 = -1000.0;
+    let mut smallest: f32 = 1000.0;
 
     for (key, value) in map.clone().drain() {
+        if value > biggest { biggest = value }
+        if value < smallest { smallest = value }
         let p: Vec<Person> = crate::db::id_to_person(key);
         let (year_float, year_string) = crate::graph::get_year(p[0].clone());
         ret.push_str(&crate::graph::graph_node(p[0].clone(), value*2.0, year_float, year_string));
         ret.push_str("\n");
     }
     for (key, value) in unknown.clone().drain() {
+        if value > biggest { biggest = value }
+        if value < smallest { smallest = value }
         let mut p: Vec<Person> = crate::db::id_to_person(key);
         let (year_float, year_string) = crate::graph::get_year(p[0].clone());
         p[0].first_name = Some(String::from("Unknown"));
@@ -305,6 +319,17 @@ fn hashmaps_to_dot(map: HashMap<i32, f32>, unknown: HashMap<i32, f32>, relation:
         ret.push_str(&crate::graph::graph_node(p[0].clone(), value*2.0, year_float, year_string));
         ret.push_str("\n");
     }
+    //println!("{} und {}", smallest, biggest);
+    ret.push_str(&format!("
+    y1900 [shape=none, fontsize=25, label=\"1900\", pos=\"{x1},{y1900}!\"];
+    y2000 [shape=none, fontsize=25, label=\"2000\", pos=\"{x1},{y2000}!\"];
+    y0 [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"{x2},{y1900}!\"];
+    y1 [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"{x2},{y2000}!\"];
+    y1900 -> y0 [style=dashed, color=\"grey\"] ; y2000 -> y1 [style=dashed, color=\"grey\"]\n\n",
+    x1 = (smallest * 2.0 ) - 4.0,
+    x2 = (biggest * 2.0 ) + 4.0,
+    y1900 = crate::graph::translate(1900, 1850, 2050, 0, -25),
+    y2000 = crate::graph::translate(2000, 1850, 2050, 0, -25)));
 
     let mut one_family: Vec<i32> = Vec::new();
     for i in 0..relation.len(){
@@ -312,7 +337,7 @@ fn hashmaps_to_dot(map: HashMap<i32, f32>, unknown: HashMap<i32, f32>, relation:
         if relation[i] != -1 { one_family.push(relation[i]) } 
         else {
             //println!("{:?}", one_family.clone());
-            if one_family.len() > 0 {
+            if one_family.len() > 1 {
                 let year_float_first: f32;
                 let year_float_second: f32;
                 // get the first and second element from one_family and get the year in a transformed float 
@@ -329,6 +354,8 @@ fn hashmaps_to_dot(map: HashMap<i32, f32>, unknown: HashMap<i32, f32>, relation:
                 }
                 ret.push_str(&get_string_of_one_family(one_family.clone(), year_float_first, year_float_second, map.clone(), unknown.clone()));
                 one_family.clear();
+            }else if one_family.len() > 0 && i == 0{
+
             }
         }
     }
@@ -453,6 +480,14 @@ fn person_into_matrix(child: Option<Person>, mut matrix: [[i32;BREIT];TIEF], min
             Some(z) => {
                 if !has_children { all_children = crate::person::get_all_children(z.clone())}
                 matrix[tiefe+1][min_breite] = z.person_id;
+                relation.push(z.person_id);
+            }
+        }
+    }else if generation == 1 {
+        match child {
+            None => {},
+            Some(z) => {
+                matrix[tiefe][BREIT/2] = z.person_id;
                 relation.push(z.person_id);
             }
         }

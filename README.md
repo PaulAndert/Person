@@ -25,46 +25,59 @@ mysql://user_name:password@server_ip:port/person
 server_ip = mysql server ip OR localhost if running on local maschine  
 port = 3306 if mysql is in default configuration  
 
-execute rust code
+build the rust code to a executable
+```console
+cargo build
+```
+-> its in target/debug/person
+
+then run it
+```console
+./target/debug/person <flags>
+```
+
+Optionally you can run th executable via cargo
 ```console
 cargo run
 ```
+then you need to replace "./target/debug/person " with "cargo run -- "  
+because the flag needs to go to the code not to cargo
 
 ### Flags
 -p          : create a new Person
 ```console
-cargo run -- -p
+./target/debug/person -p
 ```
 
 -r          : create a new Relation
 ```console
-cargo run -- -r
+./target/debug/person -r
 ```
 
 -g [gen]    : graph all relations of a person, gen = how many gerenations will be displayed, default = 4
 ```console
-cargo run -- -g 
-cargo run -- -g 2
-cargo run -- -g 5
+./target/debug/person -g 
+./target/debug/person -g 2
+./target/debug/person -g 5
 ```
 
 -u          : update a person or relation, depending on the flag in front
 ```console
-cargo run -- -p -u
-cargo run -- -r -u
+./target/debug/person -u
+./target/debug/person -u
 ```
 
 -a          : display every person in the database
 ```console
-cargo run -- -a
+./target/debug/person -a
 ```
 
 -s          : search a specific person
 ```console
-cargo run -- -s
+./target/debug/person -s
 ```
 
 -h          : display help message
 ```console
-cargo run -- -h
+./target/debug/person -h
 ```
