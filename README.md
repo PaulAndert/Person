@@ -1,30 +1,28 @@
 # Person
+A Rust CLI where you can create persons, connect them in familys and graph those relationships as a family tree graph.
 
-A Rust CLI where you can create persons, connect them in relationsships and graph those relationships as a family tree graph.
-
-Mysql - to permanently save Persons and Relations  
-Rust - language  
-Graphviz - to graph the relations  
+# Requirements
+- Mysql as the Database    
+- [Graphviz](https://graphviz.org) to display the graph  
 
 # Instalation
-
 Clone the Git Repository
 ```console
 git clone https://github.com/PaulAndert/Person.git
 ```
-
-move into the folder
+  
+create a new database via the shema in db.sql  
+  
+create a .env file with the following shema
 ```console
-cd person/person
-```
-
-copy the db.sql and execute it on a mysql server  
-
-go to src/db.rs and modify the string line 4 like:  
-mysql://user_name:password@server_ip:port/person  
-server_ip = mysql server ip OR localhost if running on local maschine  
-port = 3306 if mysql is in default configuration  
-
+DB_IP="your_db_id"
+DB_PORT="your_db_port"
+DB_USER="your_db_user_name"
+DB_PASSWORD="your_db_user_password"
+DB_TABLE="your_db_table_name"
+```  
+  
+# Compile Code
 build the rust code to a executable
 ```console
 cargo build
@@ -38,7 +36,7 @@ then run it
 
 Optionally you can run th executable via cargo
 ```console
-cargo run
+cargo run -- <flags>
 ```
 then you need to replace "./target/debug/person " with "cargo run -- "  
 because the flag needs to go to the code not to cargo
@@ -49,22 +47,22 @@ because the flag needs to go to the code not to cargo
 ./target/debug/person -p
 ```
 
--r          : create a new Relation
+-r          : create a new Family
 ```console
-./target/debug/person -r
+./target/debug/person -f
 ```
 
--g [gen]    : graph all relations of a person, gen = how many gerenations will be displayed, default = 4
+-g [id]    : graph all relations of a person, id = optional: id of root person  
 ```console
 ./target/debug/person -g 
 ./target/debug/person -g 2
 ./target/debug/person -g 5
 ```
 
--u          : update a person or relation, depending on the flag in front
+-u          : update a person or family, depending on the flag it's paired with
 ```console
-./target/debug/person -u
-./target/debug/person -u
+./target/debug/person -p -u
+./target/debug/person -f -u
 ```
 
 -a          : display every person in the database
