@@ -8,9 +8,7 @@ pub mod person;
 pub mod family;
 pub mod db;
 pub mod graph;
-
-pub mod matrix3;
-// pub mod matrix2;
+pub mod matrix;
 
 use crate::person::Person;
 use crate::family::Family;
@@ -27,7 +25,7 @@ fn main(){
         match args[1].as_str() {
             "-a" => { 
                 for p in db::get_all_persons() {
-                    print!("{}", p.four_names()) 
+                    println!("{}", p.four_names()) 
                 } 
             },
             "-f" => {

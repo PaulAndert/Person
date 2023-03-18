@@ -1,831 +1,491 @@
 use crate::Person;
 use crate::Family;
-use std::collections::HashMap;
+use crate::db;
 
-// // Width of the matrix (the more generations one has the more space it takes)
-// const BREIT: usize = 128;
-// // Height of the matrix (the more generations one has the more space it takes)
-// const TIEF: usize = 10;
+// Width of the matrix (the more generations one has the more space it takes)
+const WIDTH: usize = 32;
+// Height of the matrix (the more generations one has the more space it takes)
+const DEPTH: usize = 4;
 
-// #[allow(dead_code)]
-// pub fn print_matrix(matrix: [[i32;BREIT];TIEF]){ // print the matrix to the console
-//     let mut top: String = String::from("    ");
-//     let mut ret: String = String::new();
-//     for (i, row) in matrix.iter().enumerate() {
-//         ret.push_str(&i.to_string());
-//         if i < 10  { ret.push_str("  |") }
-//         else { ret.push_str(" |") }
-//         for (_j, col) in row.iter().enumerate() {
-//             ret.push_str(" ");
-//             if col >= &0 { 
-//                 ret.push_str(&col.to_string());
-//                 if col > &9 { ret.push_str(" |") } // take 2 space
-//                 else { ret.push_str("  |") } // take 0 space
-//             }else{
-//                 ret.push_str("   |") // if its a -1 dont write it
-//             }
-//         }
-//         ret.pop(); // delete the last |
-//         ret.push_str("\n");
-//     }
-//     for k in 0..BREIT{ // for the indexes in the first row
-//         top.push_str(" ");
-//         top.push_str(&k.to_string());
-//         if k < 10  { top.push_str("   ") }
-//         else { top.push_str("  ") }
-//     }
-//     println!("{}", top);
-//     println!("{}", ret);
-// }
+// oldest year for scaling
+pub const OLDEST: f32 = 1850.0;
+// newest year for scaling
+pub const NEWEST: f32 = 2050.0;
+// upper value to scaling to
+const SCALE_TO_UPPER: f32 = 30.0;
+// lower value to scaling to
+const SCALE_TO_LOWER: f32 = 0.0;
 
-pub fn matrix_to_string(max_generation: i32) -> String{
-    let mut matrix:[[i32;BREIT];TIEF] = [[-1;BREIT];TIEF]; // create a Matrix full of -1
-    let mut years: HashMap<i32, i32> = HashMap::new();
-
-    let mut person: Person = crate::person::search(); // get the starting point
-    while person.person_id == -1 { person = crate::person::search(); } // ask what the root person should be
-    let mut relation: Vec<i32> = Vec::new();
-    
-    (matrix, relation, years) = person_into_matrix( person.clone(), matrix, 0, BREIT-1, 0, 1, max_generation, relation, years); // get every person related to p in the matrix
-
-//     //print_matrix(matrix.clone());
-
-//     //println!("{:?}", years);
-
-//     _ = fill_up(years);
-
-//     //println!("{:?}", years);
-    
-//     let tiefste_person: usize;
-//     (matrix, tiefste_person) = test(matrix);
-//     if tiefste_person == 0 {
-//         if crate::db::person_id_to_relations(person.person_id, 4).len() > 0{
-//             let mut map: HashMap<i32, f32> = HashMap::new();
-//             let unknown: HashMap<i32, f32> = HashMap::new();
-//             map.insert(person.person_id, 0.0);
-//             let mut ret: String = crate::graph::graph_node(person.clone(), 0.0);
-//             ret.push_str(&format!("
-// y1900 [shape=none, fontsize=25, label=\"1900\", pos=\"{x1},{y1900}!\"];
-// y2000 [shape=none, fontsize=25, label=\"2000\", pos=\"{x1},{y2000}!\"];
-// y0 [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"{x2},{y1900}!\"];
-// y1 [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"{x2},{y2000}!\"];
-// y1900 -> y0 [style=dashed, color=\"grey\"] ; y2000 -> y1 [style=dashed, color=\"grey\"]\n\n",
-//             x1 = (-10.0 * 2.0 ),
-//             x2 = (20.0 * 2.0 ),
-//             y1900 = crate::graph::translate(1900),
-//             y2000 = crate::graph::translate(2000)));
-//             format!("{}\n{}", ret, first_children(person, map, unknown))
-//         } else {
-//             crate::graph::graph_node(person.clone(), 0.0)
-//         } 
-//     }else{
-//         matrix = reduce_matrix(matrix); // reduce every useless row or column
-
-//         let (map, unknown, relation) = restructure_children(matrix, relation); 
-//         // convert the matrix to 2 Hashmaps with person_id and x-positions and a Vector of every connection that needs to be made
-
-//         if crate::db::person_id_to_relations(person.person_id, 4).len() > 0{
-//             let ret: String = first_children(person, map.clone(), unknown.clone());
-//             format!("{}\n{}", hashmaps_to_dot(map, unknown, relation), ret) // convert the 2 Hashmaps and the Vector to the dot language and return it
-//         }else {
-//             hashmaps_to_dot(map, unknown, relation)
-//         }
-//     }
+#[derive(Debug, PartialEq, Eq, Clone)]
+pub struct Matrix {
+    pub data: [[i32;WIDTH];DEPTH],
 }
 
-// #[allow(dead_code)]
-// fn fill_up(mut years: HashMap<i32, i32>) -> HashMap<i32, i32> {
-//     for (key, value) in years.clone().drain() {
-//         if value == 0 {
-//             match crate::db::id_to_person(key) {
-//                 None => {},
-//                 Some(person) => {
-//                     let new_value: i32 = crate::person::find_year(person, years.clone());
-//                     if new_value != 0 {
-//                         years.insert(key,new_value);
-//                     }
-//                 }
-//             }
-//         }
-//     }
-//     years
-// }
+impl Matrix {
+    pub fn new () -> Matrix {
+        return Matrix{
+            data: [[0;WIDTH];DEPTH],
+        };
+    }
+    pub fn to_string(&self) -> String {
+        let mut mat: String = String::new();
+        mat.push_str("Matrix\n");
 
-// fn first_children(person: Person, map: HashMap<i32, f32>, unknown: HashMap<i32, f32>) -> String {
-//     let mut gender: i32 = 0;
-//     match person.clone().gender { None => {}, Some(z) => if z == "m" { gender = 1 } else { gender = 2} }
-//     let all_relations: Vec<Relation> = crate::db::person_id_to_relations(person.person_id, 4);
-//     let mut all_partner: Vec<Person> = Vec::new();
-//     // get all partners from the relations
-//     for i in 0..all_relations.len() {
-//         if gender == 1 {
-//             match all_relations[i].clone().female {
-//                 None => {},
-//                 Some(z) => { if !all_partner.contains(&z) { all_partner.push(z) } }
-//             }
-//         } 
-//         if gender == 2 {
-//             match all_relations[i].clone().male {
-//                 None => {},
-//                 Some(z) => { if !all_partner.contains(&z) { all_partner.push(z) } }
-//             }
-//         }
-//     }
+        for i in 0..self.data.len() {
+            for value in self.data[self.data.len()-(1+i)] {
+                if value == 0 {
+                    mat.push_str("   |")
+                }else if value > 9 {
+                    mat.push_str(&format!(" {}|", value))
+                }else {
+                    mat.push_str(&format!(" {} |", value))
+                }
+            }
+            mat.push_str("\n")
+        }
+        mat
+    }
+}
 
-//     if all_partner.len() == 1 {
-//         let mut all_children: Vec<Person> = Vec::new();
-//         for i in 0..all_relations.len() {
-//             match all_relations[i].clone().child {
-//                 None => {},
-//                 Some(z) => {
-//                     if !all_children.contains(&z) { all_children.push(z); }
-//                 }
-//             }
-//         }
-//         one_partner_to_string(person, gender, all_partner[0].clone(), all_children, map, unknown, 0.0)
-
-//     }else if all_partner.len() > 0 { // if more partners
-//         let mut ret: String = String::new();
-//         let mut all_children_of_0: Vec<Person> = Vec::new();
-//         let mut all_children_of_1: Vec<Person> = Vec::new();
-//         // get all children of partner 0 and 1 
-//         for i in 0..all_relations.len() {
-//             if gender == 1 {
-//                 match all_relations[i].clone().female {
-//                     None => {},
-//                     Some(z) => { 
-//                         if all_partner[0] == z{
-//                             match all_relations[i].clone().child {
-//                                 None => {},
-//                                 Some(child) => {
-//                                     if !all_children_of_0.contains(&child) {
-//                                         all_children_of_0.push(child);
-//                                     }
-//                                 }
-//                             }
-//                         } 
-//                         if all_partner[1] == z{
-//                             match all_relations[i].clone().child {
-//                                 None => {},
-//                                 Some(child) => {
-//                                     if !all_children_of_1.contains(&child) {
-//                                         all_children_of_1.push(child);
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//             } 
-//             if gender == 2 {
-//                 match all_relations[i].clone().male {
-//                     None => {},
-//                     Some(z) => { 
-//                         if all_partner[0] == z{
-//                             match all_relations[i].clone().child {
-//                                 None => {},
-//                                 Some(child) => {
-//                                     if !all_children_of_0.contains(&child) {
-//                                         all_children_of_0.push(child);
-//                                     }
-//                                 }
-//                             }
-//                         } 
-//                         if all_partner[1] == z{
-//                             match all_relations[i].clone().child {
-//                                 None => {},
-//                                 Some(child) => {
-//                                     if !all_children_of_1.contains(&child) {
-//                                         all_children_of_1.push(child);
-//                                     }
-//                                 }
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-        
-//         let mut deepest_parent: f32 = 1000.0;
-//         let mut highest_child: f32 = -1000.0;
-
-//         let (year_p, _) = crate::graph::get_year(person.clone());
-//         if year_p < deepest_parent { deepest_parent = year_p }
-//         let (year_0, _) = crate::graph::get_year(all_partner[0].clone());
-//         if year_0 < deepest_parent { deepest_parent = year_0 }
-//         let (year_1, _) = crate::graph::get_year(all_partner[1].clone());
-//         if year_1 < deepest_parent { deepest_parent = year_1 }
-
-//         for i in 0..all_children_of_0.len() {
-//             let (year_c, _) = crate::graph::get_year(all_children_of_0[i].clone());
-//             if year_c > highest_child { highest_child = year_c }
-//         }
-//         for i in 0..all_children_of_1.len() {
-//             let (year_c, _) = crate::graph::get_year(all_children_of_1[i].clone());
-//             if year_c > highest_child { highest_child = year_c }
-//         }
-
-//         let own_edge_höhe: f32 = (deepest_parent + highest_child ) / 2.0; 
-        
-//         ret.push_str(&one_partner_to_string(person.clone(), gender, all_partner[0].clone(), all_children_of_0, map.clone(), unknown.clone(), own_edge_höhe));
-//         ret.push_str(&one_partner_to_string(person, if gender == 1 { 0 } else { 1 }, all_partner[1].clone(), all_children_of_1, map, unknown, own_edge_höhe));
-        
-//         ret
-//     }else {
-//         let mut all_children: Vec<Person> = Vec::new();
-//         for i in 0..all_relations.len() {
-//             match all_relations[i].clone().child {
-//                 None => {},
-//                 Some(z) => {
-//                     if !all_children.contains(&z) { all_children.push(z); }
-//                 }
-//             }
-//         }
-//         let mut unk = person.clone();
-//         unk.first_name = Some(String::from("Unknown"));
-//         unk.middle_name = None;
-//         unk.surname = None;
-//         unk.maiden_name = None;
-//         if gender == 1 {
-//             unk.gender = Some(String::from("uf"));
-//         }else {
-//             unk.gender = Some(String::from("um"));
-//         }
-//         one_partner_to_string(person, gender, unk, all_children, map, unknown, 0.0)
-//     }
-// }
-
-// fn one_partner_to_string(person: Person, gender: i32, partner: Person, all_children: Vec<Person>, mut map: HashMap<i32, f32>, unknown: HashMap<i32, f32>, own_edge_höhe: f32) -> String {
-//     let mut ret: String = String::new();
-//     let parent_relation: Vec<Relation> = crate::db::person_id_to_relations(person.person_id, 1);
-//     let mut parent_x: f32 = -1.0;
-//     // get the x position of the mother / father of person so that the partner can be under them 
-//     if parent_relation.len() > 0 {
-//         if gender == 1 {
-//             match parent_relation[0].clone().female {
-//                 None => {
-//                     parent_x = 0.0;
-//                 },
-//                 Some(z) => {
-//                     match map.get(&z.person_id) {
-//                         None => {
-//                             parent_x = 0.0;
-//                         },
-//                         Some(x) => {
-//                             parent_x = *x;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//         if gender == 2 {
-//             match parent_relation[0].clone().male {
-//                 None => {
-//                     parent_x = 0.0;
-//                 },
-//                 Some(z) => {
-//                     match map.get(&z.person_id) {
-//                         None => {
-//                             parent_x = BREIT as f32;
-//                         },
-//                         Some(x) => {
-//                             parent_x = *x;
-//                         }
-//                     }
-//                 }
-//             }
-//         }
-//     }
-
-//     // get persons x position and change the parent x if the amount of new children is to high
-//     let mut person_x: f32 = -1.0;
-//     match map.get(&person.person_id){
-//         None => {},
-//         Some(z) => {
-//             person_x = *z;
-//             if gender == 1 {
-//                 if *z - (all_children.len() as f32) < parent_x {
-//                     parent_x = *z - 1.0 - all_children.len() as f32;
-//                 }else {
-//                     parent_x -= 1.0;
-//                 }
-//             }else if gender == 2 {
-//                 if *z + (all_children.len() as f32) > parent_x {
-//                     parent_x = *z + 1.0 + all_children.len() as f32;
-//                 }else {
-//                     parent_x += 1.0;
-//                 }
-//             }
-//         }
-//     }
-//     // calculate the distance between parents and the distance between children
-//     let parent_distance: f32 = (parent_x - person_x).abs();
-//     let start: f32;
-//     let sector: f32;
-//     if all_children.len() == 1 {
-//         start = parent_distance / 2.0;
-//         sector = 0.0;
-//     }else if parent_distance - 1.0 - (all_children.len() - 1) as f32 == 0.0 {
-//         start = 0.5;
-//         sector = 1.0;
-//     }else {
-//         start = parent_distance / (all_children.len() as f32 + 1.0);
-//         sector = start;
-//     }
-//     let mut children: f32 = 0.0;
-//     let first: f32 = if parent_x < person_x { parent_x } else { person_x };
-//     let mut one_family: Vec<i32> = Vec::new();
-//     one_family.push(person.person_id);
-//     if person.person_id == partner.person_id {
-//         map.insert(-1, parent_x);
-//         one_family.push(-1);
-//     }else {
-//         map.insert(partner.person_id, parent_x);
-//         one_family.push(partner.person_id);
-//     }
-//     ret.push_str(&crate::graph::graph_node(partner.clone(), parent_x*2.0));
-//     for j in 0..all_children.len() {
-
-//         if children == 0.0 {
-//             map.insert(all_children[j].person_id, start + first); // and to the hashmap  
-//             one_family.push(all_children[j].person_id);
-//             ret.push_str(&crate::graph::graph_node(all_children[j].clone(), (start + first ) *2.0));
-//         }else {
-//             map.insert(all_children[j].person_id, start + children*sector + first); // and to the hashmap
-//             one_family.push(all_children[j].person_id);
-//             ret.push_str(&crate::graph::graph_node(all_children[j].clone(), (start + children*sector + first) *2.0));
-//         }
-//         children += 1.0;
-//     }
-
-//     let (year_float_first, _) = crate::graph::get_year(person.clone());
-//     let (year_float_second, _) = crate::graph::get_year(partner.clone());
-//     ret.push_str(&get_string_of_one_family(one_family, year_float_first, year_float_second, map, unknown, own_edge_höhe));
-//     ret
-// }
-
-// fn test(matrix: [[i32;BREIT];TIEF]) -> ([[i32;BREIT];TIEF], usize) {
-//     let mut tiefste_person: usize = 0;
-//     for i in 1..=TIEF { // row count of the deepest person
-//         if tiefste_person == 0 { for j in 0..matrix[TIEF-i].len() { if matrix[TIEF-i][j] != -1 { tiefste_person = TIEF - i; break} } }
-//         else { break }
-//     } 
-
-//     let mut temp_matrix:[[i32;BREIT];TIEF] = [[-1;BREIT];TIEF];
-//     temp_matrix[tiefste_person] = matrix[tiefste_person];
-//     let mut temp_j: usize = 1;
-//     for i in 1..=tiefste_person {
-//         //println!("{:?}", matrix[tiefste_person-i]);
-//         for j in 0..matrix[tiefste_person-i].len() - temp_j {
-//             temp_matrix[tiefste_person-i][temp_j+j] = matrix[tiefste_person-i][j];
-//         }
-//         temp_j += 1;
-//     }
-//     (temp_matrix, tiefste_person)
-// }
-
-// fn restructure_children(matrix: [[i32;BREIT];TIEF], relation: Vec<i32>) -> (HashMap<i32, f32>, HashMap<i32, f32>, Vec<i32>) { 
-
-//     let mut tiefste_person = 0;
-//     for i in 1..=TIEF { // row count of the deepest person
-//         if tiefste_person == 0 { for j in 0..matrix[TIEF-i].len() { if matrix[TIEF-i][j] != -1 { tiefste_person = TIEF - i; break} } }
-//         else { break }
-//     }    
-    
-//     let mut map: HashMap<i32, f32> = HashMap::new(); // normal person_id ; x-position
-//     let mut unknown: HashMap<i32, f32> = HashMap::new(); // partners person_id ; x-position
-//     //let mut relation: Vec<i32> = Vec::new(); // person_id`s with -1 as seperators
-
-//     let mut first: i32 = -1;
-//     let mut dict_first: f32 = -1.0;
-//     let mut second: i32 = -1;
-//     let mut dict_second: f32;
-//     let mut unknown_insert: bool = false;
-
-//     // walking the matrix from the bottom and the two persons next to each other (partners)
-//     for k in 0..tiefste_person {
-//         for i in 0..matrix[tiefste_person-k].len() {
-//             if matrix[tiefste_person-k][i] != -1 {
-//                 let person_id: i32 = matrix[tiefste_person-k][i]; // id of person from the matrix
-//                 let index = relation.iter().position(|&r| r == person_id);
-//                 match index {
-//                     None => {},
-//                     Some(ind) => {
-//                         if ind == 0 || ind == 1 || relation[ind-1 as usize] == -1 || relation[ind-2 as usize] == -1{
-//                             match map.get(&person_id) {
-//                                 None => {                       // if the person is not in the map
-//                                     if first == -1 {            // if there is no first partner saved 
-//                                         //relation.push(person_id);
-//                                         first = i as i32;       // save the matrix position 
-//                                         if person_id == 0 { unknown_insert = true; } // if id = 0, raise flag so it can later be addet to the unknown hashmap
-//                                         else{ map.insert(person_id, i as f32); }
-//                                     }else if second == -1 {     // if there is a first partner saved but no second
-//                                         //relation.push(person_id);
-//                                         second = i as i32;      // save the matrix position 
-//                                         // if id = 0, add id of partner and matrix position to unknown hashmap
-//                                         if person_id == 0 { unknown.insert(matrix[tiefste_person-k][first as usize], second as f32); }
-//                                         else{ map.insert(person_id, i as f32); }
-//                                         if unknown_insert {     // if the flag is risen add id of partner of first and matrix position to unknown hashmap
-//                                             unknown.insert(matrix[tiefste_person-k][second as usize], first as f32);
-//                                             unknown_insert = false; // remove flag
-//                                         }
-                                        
-//                                         let parent_distance: f32 = (second - first) as f32; // calculate the distance of both partners
-//                                         let mut cnt: i32 = 0; // count the number of cildren in the matrix by going a step down and counting in the parent_distance
-//                                         for j in first..=second { if matrix[tiefste_person-k-1][j as usize] != -1 { cnt += 1; } }
-
-//                                         let start: f32;
-//                                         let sector: f32;
-//                                         if cnt == 1 {
-//                                             start = parent_distance / 2.0;
-//                                             sector = 0.0;
-//                                         }else if parent_distance - 1.0 - (cnt - 1) as f32 == 0.0 {
-//                                             start = 0.5;
-//                                             sector = 1.0;
-//                                         }else {
-//                                             start = parent_distance / (cnt as f32 + 1.0);
-//                                             sector = start;
-//                                         }
-//                                         let mut children: f32 = 0.0;
-//                                         //println!("{} -- {} ({}); Kids: {} Start: {} Sector: {}", first, second, parent_distance, cnt, start, sector);
-
-//                                         for j in first..=second {
-//                                             if matrix[tiefste_person-k-1][j as usize] != -1 { // if there is a child
-//                                                 //relation.push(matrix[tiefste_person-k-1][j as usize]); // push it to the vector
-//                                                 if children == 0.0 {
-//                                                     //println!("{} -> {} + {}", matrix[tiefste_person-k-1][j as usize], dist, first as f32);
-//                                                     map.insert(matrix[tiefste_person-k-1][j as usize], start + first as f32); // and to the hashmap  
-//                                                 }else {
-//                                                     //println!("{} -> {} + {} + {}", matrix[tiefste_person-k-1][j as usize], dist, children/2.0, first as f32);
-//                                                     map.insert(matrix[tiefste_person-k-1][j as usize], start + children*sector + first as f32); // and to the hashmap
-//                                                 }
-//                                                 children += 1.0;
-//                                             }
-//                                         }
-//                                         //relation.push(-1); // push the seperator because on family is over
-//                                         first = -1; // reset both partner
-//                                         second = -1;
-//                                     }
-//                                 },
-//                                 Some(z) => { 
-//                                 // if the person is already in the map its the same as in None exept the now parents x-positions are used not the matrix positions
-//                                     if first == -1 {
-//                                         first = i as i32;
-//                                         dict_first = *z;
-//                                         //relation.push(person_id);
-//                                     }else if second == -1 {
-//                                         //relation.push(person_id);
-//                                         second = i as i32;
-//                                         dict_second = *z;
-//                                         if dict_first == -1.0 { dict_first = first as f32; }
-                    
-//                                         let parent_distance: f32 = dict_second - dict_first;
-//                                         let mut cnt: i32 = 0;
-//                                         for j in first..=second { if matrix[tiefste_person-k-1][j as usize] != -1 { cnt += 1; } }
-                    
-//                                         let start: f32;
-//                                         let sector: f32;
-//                                         if cnt == 1 {
-//                                             start = parent_distance / 2.0;
-//                                             sector = 0.0;
-//                                         }else if parent_distance - 1.0 - (cnt - 1) as f32 == 0.0 {
-//                                             start = 0.5;
-//                                             sector = 1.0;
-//                                         }else {
-//                                             start = parent_distance / (cnt as f32 + 1.0);
-//                                             sector = start;
-//                                         }
-//                                         let mut children: f32 = 0.0;
-//                                         //println!("{} -- {} ({}); kids: {} Start: {} Sector: {}", dict_first, dict_second, parent_distance, cnt, start, sector);
-
-//                                         for j in first..=second {
-//                                             if matrix[tiefste_person-k-1][j as usize] != -1 { // if there is a child
-//                                                 //relation.push(matrix[tiefste_person-k-1][j as usize]); // push it to the vector
-//                                                 if children == 0.0 {
-//                                                     //println!("{} -> {} + {}", matrix[tiefste_person-k-1][j as usize], dist, first as f32);
-//                                                     map.insert(matrix[tiefste_person-k-1][j as usize], start + dict_first); // and to the hashmap  
-//                                                 }else {
-//                                                     //println!("{} -> {} + {} + {}", matrix[tiefste_person-k-1][j as usize], dist, children/2.0, first as f32);
-//                                                     map.insert(matrix[tiefste_person-k-1][j as usize], start + children*sector + dict_first); // and to the hashmap
-//                                                 }
-//                                                 children += 1.0;
-//                                             }
-//                                         }
-//                                         //relation.push(-1);
-//                                         first = -1;
-//                                         second = -1;
-//                                     }
-//                                 },
-//                             }
-//                         }
-//                     },
-//                 }
-//             }
-//         }
-//     }
-//     //println!("{:?}", map);
-//     //println!("{:?}", unknown);
-//     //println!("{:?}", relation);
-//     (map, unknown, relation)
-// }
-
-// fn reduce_matrix(matrix: [[i32;BREIT];TIEF]) -> [[i32;BREIT];TIEF] {
-
-//     let mut tiefste_person = 0;
-//     for i in 1..=TIEF { // row count of the deepest person
-//         if tiefste_person == 0 { for j in 0..matrix[TIEF-i].len() { if matrix[TIEF-i][j] != -1 { tiefste_person = TIEF - i; break} } }
-//         else { break }
-//     }
-
-//     let mut temp_matrix:[[i32;BREIT];TIEF] = [[-1;BREIT];TIEF];
-//     let mut temp_j: usize = 0;
-//     for j in 0..=tiefste_person { 
-//         if j % 2 == 1 || j == 0 { 
-
-//             temp_matrix[temp_j] = matrix[j];
-//             temp_j += 1 ;
-//             // if j + 1 <= tiefste_person {
-//             //     for i in 0..matrix[].len() {
-
-//             //     }
-//             // }
-//         } 
-//     }
-//     // clear out all useless rows = all straigt
-
-//     //matrix = temp_matrix;
-
-//     let mut kill_column: [bool;BREIT] = [false;BREIT];
-//     for i in 0..matrix[tiefste_person].len() {
-//         if matrix[tiefste_person][i] == -1 {
-//             let mut cnt: i32 = 0;
-//             for j in 0..=tiefste_person { if matrix[j][i] == -1 { cnt += 1 } } // zählen ob die spalte weg kann
-//             if cnt == (tiefste_person + 1) as i32 { kill_column[i] = true } // alle die weg können bleiben false
-//         }   
-//     }
-
-//     let mut ret_matrix:[[i32;BREIT];TIEF] = [[-1;BREIT];TIEF];
-//     let mut new_i: usize = 0;
-//     for i in 0..BREIT {
-//         if !kill_column[i] {
-//             for j in 0..=tiefste_person { ret_matrix[j][new_i] = matrix[j][i] }
-//             new_i += 1;
-//         } 
-//     }
-//     // move only the usefull columns ino the returning matrix
-//     ret_matrix
-// }
-
-// fn hashmaps_to_dot(map: HashMap<i32, f32>, unknown: HashMap<i32, f32>, relation: Vec<i32>) -> String {
-//     let mut ret: String = String::new();
-
-//     //println!("{:?}", relation.clone());
-//     let mut biggest: f32 = -1000.0;
-//     let mut smallest: f32 = 1000.0;
-
-//     for (key, value) in map.clone().drain() {
-//         if value > biggest { biggest = value }
-//         if value < smallest { smallest = value }
-//         match crate::db::id_to_person(key) {
-//             None => { println!("There is no person with the id: {}", key); },
-//             Some(z) => {
-//                 ret.push_str(&crate::graph::graph_node(z, value*2.0));
-//                 ret.push_str("\n");
-//             },
-//         }
-//     }
-//     for (key, value) in unknown.clone().drain() {
-//         if value > biggest { biggest = value }
-//         if value < smallest { smallest = value }
-//         match crate::db::id_to_person(key) {
-//             None => { println!("There is no person with the id: {}", key); },
-//             Some(mut z) => {
-//                 z.first_name = Some(String::from("Unknown"));
-//                 z.middle_name = None;
-//                 z.surname = Some(String::from(" "));
-//                 z.maiden_name = None;
-//                 z.gender = match z.clone().gender {
-//                     None => {
-//                         println!("{} has no gender", z.person_id);
-//                         Some(String::from(" "))
-//                     },
-//                     Some(gender) => {
-//                         if gender == "f" { Some(String::from("um")) }
-//                         else { Some(String::from("uf")) }
-//                     },
-//                 };
-//                 ret.push_str(&crate::graph::graph_node(z, value*2.0));
-//                 ret.push_str("\n");
-//             }
-//         }
-//     }
-//     ret.push_str(&format!("
-// y1900 [shape=none, fontsize=25, label=\"1900\", pos=\"{x1},{y1900}!\"];
-// y2000 [shape=none, fontsize=25, label=\"2000\", pos=\"{x1},{y2000}!\"];
-// y0 [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"{x2},{y1900}!\"];
-// y1 [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"{x2},{y2000}!\"];
-// y1900 -> y0 [style=dashed, color=\"grey\"] ; y2000 -> y1 [style=dashed, color=\"grey\"]\n\n",
-//     x1 = (smallest * 2.0 ) - 8.0,
-//     x2 = (biggest * 2.0 ) + 8.0,
-//     y1900 = crate::graph::translate(1900),
-//     y2000 = crate::graph::translate(2000)));
-
-//     let mut one_family: Vec<i32> = Vec::new();
-//     for i in 0..relation.len(){
-//         // if we encounter a real id we write it in the one_family vector
-//         if relation[i] != -1 { one_family.push(relation[i]) } 
-//         else if one_family.len() > 0 {
-//             let mut year_float_first: f32 = 0.0;
-//             let mut year_float_second: f32 = 0.0;
-//             // get the first and second element from one_family and get the year in a transformed float 
-//             // if a partner is 0, we take the year from the other partner
-//             let mut first_is_null: bool = false;
-//             if one_family[0] != 0 {
-//                 match crate::db::id_to_person( one_family[0] ) {
-//                     None => { println!("There is no person with the id: {}", one_family[0] ) },
-//                     Some(z) => { (year_float_first, _) = crate::graph::get_year( z ) },
-//                 }
-//             }else { first_is_null = true }
-//             if one_family[1] != 0 {
-//                 match crate::db::id_to_person( one_family[1] ) {
-//                     None => { println!("There is no person with the id: {}", one_family[1] ) },
-//                     Some(z) => { (year_float_second, _) = crate::graph::get_year( z ) },
-//                 }
-//                 if first_is_null { year_float_first = year_float_second.clone() }
-//             }else { year_float_second = year_float_first.clone() }
-
-//             ret.push_str(&get_string_of_one_family(one_family.clone(), year_float_first, year_float_second, map.clone(), unknown.clone(), 0.0));
-//             one_family.clear();
-//         }
-//     }
-//     ret
-// }
-
-// fn get_string_of_one_family(one_family: Vec<i32>, year_float_first: f32, year_float_second: f32, map: HashMap<i32, f32>, unknown: HashMap<i32, f32>, mut edge_höhe: f32) -> String {
-//     let mut ret: String = String::new();
-//     let parent_year: f32;
-//     if year_float_first < year_float_second { parent_year = year_float_first }
-//     else { parent_year = year_float_second }
-
-//     let mut children_year: f32 = -10000.0;
-//     let mut year_float_child: Vec<f32> = Vec::new();
-//     for j in 2..one_family.len() {
-//         match crate::db::id_to_person(one_family[j]) {
-//             None => { println!("There is no person with the id: {}", one_family[j] ); },
-//             Some(z) => {
-//                 let (year, _) = crate::graph::get_year(z);
-//                 year_float_child.push(year);
-//                 if year > children_year {
-//                     children_year = year;
-//                 }
-//             },
-//         }
-//     }
-
-//     if edge_höhe == 0.0 {
-//         edge_höhe = (parent_year + children_year ) / 2.0; 
-//     }
-//     let mut first_x: f32 = 0.0;
-//     if one_family[0] == 0 {
-//         match unknown.get(&one_family[1]) {
-//             None => {},
-//             Some(z) => {
-//                 first_x = (*z)*2.0;
-//             },
-//         }
-//     }else {
-//         match map.get(&one_family[0]) {
-//             None => {},
-//             Some(z) => {
-//                 first_x = (*z)*2.0;
-//             },
-//         }
-//     }
-//     let mut second_x: f32 = 0.0;
-//     if one_family[1] == 0 {
-//         match unknown.get(&one_family[0]) {
-//             None => {},
-//             Some(z) => {
-//                 second_x = (*z)*2.0;
-//             },
-//         }
-//     }else {
-//         match map.get(&one_family[1]) {
-//             None => {},
-//             Some(z) => {
-//                 second_x = (*z)*2.0;
-//             },
-//         }
-//     }
-//     ret.push_str(&crate::graph::graph_edge(first_x, edge_höhe));
-//     ret.push_str(&crate::graph::graph_edge(second_x, edge_höhe));
-//     for k in 2..one_family.len() {
-//         match map.get(&one_family[k]) {
-//             None => {},
-//             Some(z) => {
-//                 ret.push_str(&crate::graph::graph_edge((*z)*2.0, edge_höhe));
-//             },
-//         }
-//     }
-
-//     ret.push_str("\n");
-//     ret.push_str(&crate::graph::form(first_x, year_float_first));
-//     ret.push_str(" -> ");
-//     ret.push_str(&crate::graph::form(first_x, edge_höhe));
-//     ret.push_str(" -> ");
-
-//     let mut child_ret: String = String::new();
-//     for l in 2..one_family.len() {
-//         match map.get(&one_family[l]) { 
-//             None => {break},
-//             Some(z) => {
-//                 ret.push_str(&crate::graph::form((*z)*2.0, edge_höhe));
-//                 ret.push_str(" -> ");
-//                 child_ret.push_str(&crate::graph::form((*z)*2.0, edge_höhe));
-//                 child_ret.push_str(" -> ");
-//                 child_ret.push_str(&crate::graph::form((*z)*2.0, year_float_child[l-2]));
-//                 child_ret.push_str("; ");
-//             },
-//         }
-//     }
-//     ret.push_str(&crate::graph::form(second_x, edge_höhe));
-//     ret.push_str(" -> ");
-//     ret.push_str(&crate::graph::form(second_x, year_float_second));
-//     ret.push_str("\n");
-
-//     ret.push_str(&child_ret);
-//     ret.push_str("\n");
-//     ret.push_str("\n");
-
-//     ret
-// }
-
-fn person_into_matrix(child: Person, mut matrix: [[i32;BREIT];TIEF], min_breite: usize, max_breite: usize, tiefe: usize, generation: i32, max_generation: i32, mut relation: Vec<i32>, mut years: HashMap<i32, i32>) -> ([[i32;BREIT];TIEF], Vec<i32>, HashMap<i32, i32>) {    
-    
-    let all_rela: Vec<Relation> = crate::db::person_id_to_relations(child.person_id, 1);
-    let mut has_children: bool = false;
-    let mut all_children: Vec<Person> = Vec::new();
-    if all_rela.len() > 0{
-        match &all_rela[0].male {
+pub fn create_dot_string(id: i32) -> String{
+    let mut person: Person;
+    if id != -1 {
+        match db::get_person_by_id(id) {
             None => {
-                matrix[tiefe+1][(max_breite-min_breite+1)/2+min_breite] = 0;
-                relation.push(0);
+                person = crate::person::search(); 
+                while person.person_id == -1 { 
+                    person = crate::person::search(); 
+                }
             },
-            Some(z) => {
-                all_children = crate::person::get_all_children(z.clone());
-                has_children = true;
-                matrix[tiefe+1][(max_breite-min_breite+1)/2+min_breite] = z.person_id;
-                relation.push(z.person_id);
-                match z.clone().birthday {
+            Some(per) => {person = per},
+        }
+    } else {
+        person = crate::person::search(); 
+        while person.person_id == -1 { 
+            person = crate::person::search(); 
+        }
+    }
+    
+    let all_familys: Vec<Vec<Family>> = init_all_familys(Vec::new(), person, 0);
+
+    let mut matrix: Matrix = Matrix::new();
+
+    matrix = all_familys_to_matrix(all_familys.clone(), matrix);
+
+    //println!("{}", matrix.to_string());
+
+    // for i in 0..all_familys.len() {
+    //     println!("I: {}", i);
+    //     for j in all_familys[i].clone() {
+    //         println!("{}", j.to_string());
+    //     }
+    // }
+
+    let stri: String = matrix_to_dot_string(matrix, all_familys);
+
+    stri
+}
+
+fn matrix_to_dot_string(matrix: Matrix, all_familys: Vec<Vec<Family>>) -> String {
+    let persons: String = insert_dot_persons(matrix.clone());
+    //println!("{}", persons);
+    let connections: String = insert_dot_connections(matrix, all_familys);
+    //println!("{}", connections);
+    format!("{}\n\n{}", persons, connections)
+}
+
+fn insert_dot_connections(matrix: Matrix, all_familys: Vec<Vec<Family>>) -> String {
+    let mut ret: String = String::new();
+    let last_gen: usize = all_familys.len();
+
+    for i in 1..=all_familys.len() { // all familys von oben durch gehen 
+        for family in all_familys[last_gen-i].clone() {
+            // println!("{}", family.to_string());
+// Male
+            let male = match family.male {
+                Some(per) => {per},
+                None => {Person::new()},
+            };
+            // println!("{}", male.three_names());
+            let male_year: String = match male.birthday {
+                None => {
+                    search_birth_year(male.clone())
+                },
+                Some(z) => {z.format("%Y").to_string()},
+            };
+            let male_y: f32 = year_to_y(male_year.clone());
+
+            // println!("{:?}", matrix.data[DEPTH-i]);
+            let male_x: f32 = 3.0 * match matrix.data[DEPTH-i].iter().position(|&e| e == male.person_id) {
+                Some(idx) => {(idx) as f32},
+                None => {println!("Error male_x is not in row"); 0.0},
+            };
+
+// Children
+            let mut children_y: Vec<f32> = Vec::new();
+            let mut children_x: Vec<f32> = Vec::new();
+
+            for child in family.children.clone() {
+                let child_year: String = match child.birthday {
+                    None => {
+                        search_birth_year(child.clone())
+                    },
+                    Some(z) => {z.format("%Y").to_string()},
+                };
+                children_y.push(year_to_y(child_year.clone()));
+                children_x.push(3.0 * match matrix.data[DEPTH-(i+1)].iter().position(|&e| e == child.person_id) {
+                    Some(idx) => {(idx) as f32},
+                    None => {println!("Error male_x is not in row"); 0.0},
+                });
+            }
+// Female
+            let female = match family.female {
+                Some(per) => {per},
+                None => {Person::new()},
+            };
+            let female_year: String = match female.birthday {
+                None => {
+                    search_birth_year(female.clone())
+                },
+                Some(z) => {z.format("%Y").to_string()},
+            };
+            let female_y: f32 = year_to_y(female_year.clone());
+            let female_x: f32 = 3.0 * match matrix.data[DEPTH-i].iter().position(|&e| e == female.person_id) {
+                Some(idx) => {(idx) as f32},
+                None => {println!("Error male_x is not in row"); 0.0},
+            };
+
+            let middle_y: f32 = translate(((average_vector(vec![male, female]) + average_vector(family.children.clone())) / 2.0) as i32);
+// insert the lines
+// x22_0y_13_75 [shape=circle,label="",height=0.01,width=0.01, pos="22,-13.75!"];
+            // println!("MX: {}", male_x);
+            ret.push_str(
+                &format!("x{}y{} [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"{}, {}!\"];\n", 
+                male_x, format!("{:.2}", middle_y).replace("-", "_").replace(".", "_"), male_x, middle_y.to_string())
+            );
+
+            for child_idx in 0..children_x.len() {
+                ret.push_str(
+                    &format!("x{}y{} [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"{}, {}!\"];\n", 
+                    children_x[child_idx], format!("{:.2}", middle_y).replace("-", "_").replace(".", "_"), children_x[child_idx], middle_y.to_string())
+                );
+            }
+
+            ret.push_str(
+                &format!("x{}y{} [shape=circle,label=\"\",height=0.01,width=0.01, pos=\"{}, {}!\"];\n", 
+                female_x, format!("{:.2}", middle_y).replace("-", "_").replace(".", "_"), female_x, middle_y.to_string())
+            );
+
+
+            let mut conn: String = String::new();
+            conn.push_str(&format!("x{}y{} -> ", male_x, format!("{:.2}", male_y).replace("-", "_").replace(".", "_")));
+
+            conn.push_str(&format!("x{}y{} -> ", male_x, format!("{:.2}", middle_y).replace("-", "_").replace(".", "_")));
+
+            for child_idx in 0..children_x.len() {
+                conn.push_str(&format!("x{}y{} -> ", children_x[child_idx], format!("{:.2}", middle_y).replace("-", "_").replace(".", "_")));
+            }
+
+            conn.push_str(&format!("x{}y{} -> ", female_x, format!("{:.2}", middle_y).replace("-", "_").replace(".", "_")));
+
+            conn.push_str(&format!("x{}y{};\n", female_x, format!("{:.2}", female_y).replace("-", "_").replace(".", "_")));
+
+            ret.push_str(&conn);
+
+            for child_idx in 0..children_x.len() {
+                ret.push_str(
+                    &format!("x{}y{} -> x{}y{};\n",
+                    children_x[child_idx], format!("{:.2}", middle_y).replace("-", "_").replace(".", "_"),
+                    children_x[child_idx], format!("{:.2}", children_y[child_idx]).replace("-", "_").replace(".", "_")
+                ));
+            }
+        }
+    }
+    ret
+}
+
+fn average_vector(persons: Vec<Person>) -> f32 {
+
+    let mut add: f32 = 0.0;
+
+    for person in persons.clone() {
+        let year_string: String  = match person.birthday {
+            None => {
+                search_birth_year(person.clone())
+            },
+            Some(z) => {z.format("%Y").to_string()},
+        };
+        add += match year_string.parse::<i32>() {
+            Ok(year) => {year as f32},
+            Err(e) => {println!("{}", e); 0.0} 
+        };
+    }
+    add / (persons.len() as f32)
+}
+
+fn insert_dot_persons(matrix: Matrix) -> String {
+    // x25_61y_19_25 [shape=square, color="blue",label="Ben Rudi Andert 2004", pos="25.61111,-19.25!"];
+
+    let mut ret: String = String::new();
+
+    for i in 1..=matrix.data.len() {
+        for j in 0..matrix.data[matrix.data.len()-i].len() {
+            let data: i32 = matrix.data[matrix.data.len()-i][j];
+            if data != 0 {
+                match db::get_person_by_id(data) {
+                    None => {println!("ERROR id {} returns no person", data); Person::new()},
+                    Some(person) => {
+                        let x: usize = j * 3;
+                        let year: String = match person.birthday {
+                            None => {
+                                search_birth_year(person.clone())
+                            },
+                            Some(z) => {z.format("%Y").to_string()},
+                        };
+                        let y: f32 = year_to_y(year.clone());
+                        let shape: String; 
+                        let color: String;
+                        match person.clone().gender {
+                            None => {
+                                shape = String::from("triangle");
+                                color = String::from("gray");
+                            },
+                            Some(gend) => {
+                                if gend == "m" {
+                                    shape = String::from("square");
+                                    color = String::from("blue");
+                                }else if gend == "f" {
+                                    shape = String::from("circle");
+                                    color = String::from("pink");
+                                }else {
+                                    shape = String::from("triangle");
+                                    color = String::from("gray");
+                                }
+                            },
+                        }
+                        let label: String = format!("{}\n{}", person.three_names(), year);
+                        ret.push_str(
+                        &format!(
+                                "x{}y{} [shape={}, color={}, label=\"{}\", pos=\"{}, {}!\"];\n", 
+                                x, format!("{:.2}", y).replace("-", "_").replace(".", "_"), shape, color, label, x, y.to_string()
+                            )
+                        );
+                        person
+                    },
+                };
+            }
+        }
+    }
+
+    ret
+}
+
+fn year_to_y(year: String) -> f32 {
+    let year_i32 : i32 = match year.parse::<i32>() {
+        Ok(year) => {year},
+        Err(e) => {println!("{}", e); 0} 
+    };
+
+    if year_i32 != 0 {
+        return translate(year_i32);
+    }else{
+        return 0.0;
+    }
+}
+
+pub fn translate(value: i32) -> f32 {
+    let left_span: f32 = NEWEST - OLDEST;
+    let right_span: f32 = SCALE_TO_LOWER - SCALE_TO_UPPER;
+    let value_scaled: f32 = (value as f32 - OLDEST) / left_span;
+    return SCALE_TO_UPPER + (value_scaled * right_span);
+}
+
+fn search_birth_year(person: Person) -> String {
+    let gender: String = match person.gender {
+        None => {String::new()},
+        Some(z) => {z},
+    };
+    let mut possibilitys: Vec<String> = Vec::new();
+
+    // search within marriage partners
+    let familys: Vec<Family> = db::get_family_by_parent_id(person.person_id);
+
+    for family in familys.clone() {
+        let date: String;
+        if gender == "m" {
+            match family.female {
+                None => { date = String::new(); },
+                Some(male) => {
+                    match male.birthday {
+                        None => { date = String::new(); },
+                        Some(birth) => {date = birth.format("%Y").to_string(); },
+                    }
+                }
+            }
+        }else if gender == "f" {
+            match family.male {
+                None => { date = String::new(); },
+                Some(female) => {
+                    match female.birthday {
+                        None => { date = String::new(); },
+                        Some(birth) => {date = birth.format("%Y").to_string(); },
+                    }
+                }
+            }
+        }else {
+            date = String::new();
+        }
+        if date != String::new() {
+            possibilitys.push(date);
+        }
+    }
+
+    if possibilitys.len() >= 1 {
+        if possibilitys.len() == 1 {
+            return possibilitys[0].clone();
+        }else{
+            let mut add: i32 = 0;
+            for item in possibilitys.clone() {
+                match item.parse::<i32>() {
+                    Ok(year) => {add += year},
+                    Err(e) => {println!("{}", e);} 
+                }
+            }
+            return ((add / possibilitys.len() as i32) as i32).to_string();
+        }
+    }else {
+        // search within children
+        for family in familys {
+
+            for child in family.children {
+                match child.birthday {
                     None => {},
-                    Some(bir) => { if !bir.is_empty() { years.insert(z.person_id, crate::graph::get_year_from_birthday(bir) ); } },
+                    Some(birth) => {
+                        possibilitys.push(birth.format("%Y").to_string());
+                    },
                 }
             }
         }
-        match &all_rela[0].female {
-            None => {
-                matrix[tiefe+1][min_breite] = 0;
-                relation.push(0);
-            },
-            Some(z) => {
-                if !has_children { all_children = crate::person::get_all_children(z.clone())}
-                matrix[tiefe+1][min_breite] = z.person_id;
-                relation.push(z.person_id);
-                match z.clone().birthday {
+        if possibilitys.len() >= 1 {
+            if possibilitys.len() == 1 {
+                return match possibilitys[0].clone().parse::<i32>() {
+                    Ok(year) => {(year - 30).to_string()},
+                    Err(e) => {println!("{}", e); String::new() } 
+                }
+            }else{
+                let mut add: i32 = 0;
+                for item in possibilitys.clone() {
+                    match item.parse::<i32>() {
+                        Ok(year) => {add += year},
+                        Err(e) => {println!("{}", e);} 
+                    }
+                }
+                return (((add / possibilitys.len() as i32) as i32) - 30).to_string();
+            }
+        }else{
+            // search within parents
+            let parents: Vec<Person> = db::get_person_by_child_id(person.person_id);
+
+            for parent in parents {
+
+                match parent.birthday {
                     None => {},
-                    Some(bir) => { if !bir.is_empty() { years.insert(z.person_id, crate::graph::get_year_from_birthday(bir) ); } },
+                    Some(birth) => {
+                        possibilitys.push(birth.format("%Y").to_string());
+                    },
+                }
+
+            }
+            if possibilitys.len() >= 1 {
+                if possibilitys.len() == 1 {
+                    return match possibilitys[0].clone().parse::<i32>() {
+                        Ok(year) => {(year + 30).to_string()},
+                        Err(e) => {println!("{}", e); String::new() } 
+                    }
+                }else{
+                    let mut add: i32 = 0;
+                    for item in possibilitys.clone() {
+                        match item.parse::<i32>() {
+                            Ok(year) => {add += year},
+                            Err(e) => {println!("{}", e);} 
+                        }
+                    }
+                    return (((add / possibilitys.len() as i32) as i32) + 30).to_string();
                 }
             }
         }
-    }else if generation == 1 {
-        matrix[tiefe][BREIT/2] = child.person_id;
-        relation.push(child.person_id);
-        match child.clone().birthday {
-            None => {},
-            Some(bir) => { if !bir.is_empty() { years.insert(child.person_id, crate::graph::get_year_from_birthday(bir) ); } },
-        }
     }
-    // TODO hier wenn gender m or f dann unterschiedlich annordnen so das grapf besser assieht
-    for i in 0..all_children.len() {
-        matrix[tiefe][i+min_breite] = all_children[i].person_id;
-        relation.push(all_children[i].person_id);
-        match all_children[i].clone().birthday {
-            None => {},
-            Some(bir) => { if !bir.is_empty() { years.insert(all_children[i].person_id, crate::graph::get_year_from_birthday(bir) ); } },
-        }
-    }
-    relation.push(-1);
+    String::new()
+}
 
-    if all_rela.len() > 0 && generation + 1 <= max_generation{
-        match all_rela[0].female.clone() {
-            None => {},
-            Some(z) => { (matrix, relation, years) = person_into_matrix(z, matrix, min_breite, (max_breite-min_breite-1)/2+min_breite, tiefe+1, generation + 1, max_generation, relation.clone(), years) },
-        }
-        match all_rela[0].male.clone() {
-            None => {},
-            Some(z) => { (matrix, relation, years) = person_into_matrix(z, matrix, (max_breite-min_breite+1)/2+min_breite, max_breite, tiefe+1, generation + 1, max_generation, relation.clone(), years) },
+fn all_familys_to_matrix(all_familys: Vec<Vec<Family>>, mut matrix: Matrix) -> Matrix {
+    let last_gen: usize = all_familys.len();
+
+    for i in 1..=all_familys.len() {
+        let mut current_width: usize = 0;
+        for family in all_familys[last_gen-i].clone() {
+            //println!("{}", family.to_string());
+
+// Male
+            let male_id = match family.male {
+                Some(per) => {per.person_id},
+                None => {0},
+            };
+            if !matrix.data[DEPTH-i].contains(&male_id) {
+                matrix.data[DEPTH-i][current_width] = male_id;
+            }
+            
+            current_width = match matrix.data[DEPTH-i].iter().position(|&e| e == male_id) {
+                Some(idx) => {idx + 1},
+                None => {current_width + 1},
+            };
+// Children
+            for child in family.children {
+                matrix.data[DEPTH-(i+1)][current_width] = child.person_id;
+                current_width += 1;
+            }
+// Female
+            let female_id = match family.female {
+                Some(per) => {per.person_id},
+                None => {0},
+            };  
+            if !matrix.data[DEPTH-i].contains(&female_id) {
+                matrix.data[DEPTH-i][current_width] = female_id;
+            }
+            current_width += 1;
         }
     }
-    
-    (matrix, relation, years)
+
+    return matrix;
+}
+
+fn init_all_familys(mut all_familys: Vec<Vec<Family>>, person: Person, gen: usize) -> Vec<Vec<Family>> {
+    let all_connected_familys: Vec<Family> = db::get_family_by_child_id(person.person_id);
+
+    for family in all_connected_familys.clone() {
+        if all_familys.len() > gen && !all_familys[gen].contains(&family) {
+            all_familys[gen].push(family);
+        }else {
+            all_familys.push(Vec::new());
+            all_familys[gen].push(family);
+        }
+    }
+
+    for family in all_connected_familys {
+        match family.male {
+            None => {},
+            Some(male) => {
+                all_familys = init_all_familys(all_familys, male, gen + 1);
+            },
+        }
+        match family.female {
+            None => {},
+            Some(female) => {
+                all_familys = init_all_familys(all_familys, female, gen + 1);
+            },
+        }
+        
+    }
+
+    all_familys
 }
