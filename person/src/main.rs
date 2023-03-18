@@ -2,6 +2,7 @@ extern crate mysql;
 #[macro_use]
 extern crate lazy_static;
 use std::env;
+use dotenv::dotenv;
 
 pub mod person;
 pub mod family;
@@ -18,6 +19,7 @@ use crate::family::Family;
 fn print_type_of<T>(_: &T) { println!("{}", std::any::type_name::<T>()) }
 
 fn main(){
+    dotenv().ok();
     let args: Vec<_> = env::args().collect();
     let mut update: bool = false;
     if args.len() > 1 {
@@ -56,7 +58,7 @@ fn main(){
             },
             "-i" => {
                 // import from another source ex. obsidian files
-                
+
             }
             "-p" => {
                 if update { 

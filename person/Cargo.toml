@@ -8,3 +8,4 @@ edition = "2021"
 [dependencies]
 mysql = "16.1.0"
 lazy_static = "1.4.0"
+dotenv = "0.15.0"

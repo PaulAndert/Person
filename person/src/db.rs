@@ -2,7 +2,17 @@ use crate::Person;
 use crate::Family;
 use mysql::chrono::NaiveDate;
 
-lazy_static! { static ref POOL : mysql::Pool = mysql::Pool::new("mysql://root:Gravure1247@127.0.0.1:6000/person").unwrap(); }
+lazy_static! { 
+    static ref POOL : mysql::Pool = mysql::Pool::new(
+        format!("mysql://{}:{}@{}:{}/{}", 
+        std::env::var("DB_USER").expect("DB_IP must be set."),
+        std::env::var("DB_PASSWORD").expect("DB_IP must be set."),
+        std::env::var("DB_IP").expect("DB_IP must be set."),
+        std::env::var("DB_PORT").expect("DB_IP must be set."),
+        std::env::var("DB_TABLE").expect("DB_IP must be set.")
+    )
+    ).unwrap(); 
+}
 
 pub fn get_all_persons() -> Vec<Person>{
     let mut ret: Vec<Person> = Vec::new();
