@@ -13,7 +13,7 @@ git clone https://github.com/PaulAndert/Person.git
   
 create a new database via the shema in db.sql  
   
-create a .env file with the following shema
+create a .env file with the following shema in the root directory
 ```console
 DB_IP="your_db_id"
 DB_PORT="your_db_port"
