@@ -1,2 +1,0 @@
-cargo:rustc-env=TYPENUM_BUILD_CONSTS=/Users/paulandert/Visual Studio Code/Rust/Person/person/target/release/build/typenum-32e48dd2fecdca64/out/consts.rs
-cargo:rustc-env=TYPENUM_BUILD_OP=/Users/paulandert/Visual Studio Code/Rust/Person/person/target/release/build/typenum-32e48dd2fecdca64/out/op.rs

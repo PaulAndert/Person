@@ -1,2 +1,0 @@
-cargo:rustc-env=TYPENUM_BUILD_CONSTS=/Users/aya/Documents/VSCode/Rust/Person/person/target/debug/build/typenum-cf5ca8ae7bb3b4a3/out/consts.rs
-cargo:rustc-env=TYPENUM_BUILD_OP=/Users/aya/Documents/VSCode/Rust/Person/person/target/debug/build/typenum-cf5ca8ae7bb3b4a3/out/op.rs
