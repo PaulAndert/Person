@@ -1,0 +1,4 @@
+digraph P {
+    edge [dir=forward, arrowhead=none];
+    node [fontsize=11, fixedsize=true, height=1.5, width=1.5];
+

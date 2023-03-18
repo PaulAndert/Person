@@ -1,0 +1,19 @@
+/Users/paulandert/Visual Studio Code/Rust/Person/person/target/debug/deps/mysql-7ca663281e8e8ac4.rmeta: /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/lib.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/mod.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/opts.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/pool.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/stmt_cache.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/error.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/io/mod.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/io/tcp.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/packet.rs
+
+/Users/paulandert/Visual Studio Code/Rust/Person/person/target/debug/deps/libmysql-7ca663281e8e8ac4.rlib: /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/lib.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/mod.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/opts.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/pool.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/stmt_cache.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/error.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/io/mod.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/io/tcp.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/packet.rs
+
+/Users/paulandert/Visual Studio Code/Rust/Person/person/target/debug/deps/mysql-7ca663281e8e8ac4.d: /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/lib.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/mod.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/opts.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/pool.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/stmt_cache.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/error.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/io/mod.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/io/tcp.rs /Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/packet.rs
+
+/Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/lib.rs:
+/Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/mod.rs:
+/Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/opts.rs:
+/Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/pool.rs:
+/Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/conn/stmt_cache.rs:
+/Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/error.rs:
+/Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/io/mod.rs:
+/Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/io/tcp.rs:
+/Users/paulandert/.cargo/registry/src/github.com-1ecc6299db9ec823/mysql-16.1.0/src/packet.rs:
+
+# env-dep:CARGO_CFG_TARGET_ARCH=x86_64
+# env-dep:CARGO_CFG_TARGET_OS=macos
+# env-dep:CARGO_PKG_VERSION=16.1.0
