@@ -9,6 +9,7 @@ pub mod family;
 pub mod db;
 pub mod graph;
 pub mod matrix;
+pub mod import;
 
 use crate::person::Person;
 use crate::family::Family;
@@ -55,8 +56,14 @@ fn main(){
                 println!("TODO print help message") 
             },
             "-i" => {
-                // import from another source ex. obsidian files
-
+                if args.len() > 2 && args[2] != "-u" {
+                    match args[2].parse::<bool>() {
+                        Ok(boo) => { import::import_obsidian(boo); },
+                        Err(e) => { println!("{}", e); } 
+                    };
+                }else {
+                    import::import_obsidian(false);
+                }
             }
             "-p" => {
                 if update { 
@@ -70,7 +77,7 @@ fn main(){
                     db::update_person(person);
                 }else { 
                     let person: Person = person::create();
-                    if person != Person::new() { db::insert_person(person) }
+                    if person != Person::new() { _ = db::insert_person(person) }
                 }
             },
             "-s" => { 
@@ -91,6 +98,7 @@ cargo run
     -u          : update a given thing (only in combination with another mode)
     -s          : search a person
     -h          : help -> shows this and / or more
+    -i [true|false]   : import from obsidian files with optional parameter: true = reset DB, false = dont reset DB 
     
 Examples:
     cargo run -p : new person

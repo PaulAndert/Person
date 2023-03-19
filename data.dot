@@ -2,48 +2,125 @@ digraph P {
 edge [dir=forward, arrowhead=none];
 node [fontsize=11, fixedsize=true, height=1.5, width=1.5];
 
-x0y14_85 [shape=square, color=blue, label="Rainer Dabutziak
-1951", pos="0, 14.85!"];
-x9y14_40 [shape=circle, color=pink, label="Gabi Kosin
-1954", pos="9, 14.400001!"];
-x12y16_50 [shape=square, color=blue, label="Rudi Andert
-1940", pos="12, 16.5!"];
-x21y15_30 [shape=circle, color=pink, label="Edith Inge Gertrud Andert
-1948", pos="21, 15.299999!"];
-x3y11_55 [shape=square, color=blue, label="Randy Andert
-1973", pos="3, 11.549999!"];
-x6y10_95 [shape=square, color=blue, label="Mike Kosin
-1977", pos="6, 10.950001!"];
-x15y10_95 [shape=circle, color=pink, label="Silvia Andert
+x54y24_90 [shape=square, color=blue, label="Wilhelm Polz
+1884", pos="54, 24.9!"];
+x60y24_90 [shape=circle, color=pink, label="Marie Polz
+1884", pos="60, 24.9!"];
+x0y18_00 [shape=square, color=blue, label="Paul Dabudziak
+1930", pos="0, 18!"];
+x15y17_85 [shape=circle, color=pink, label="Irene Dabudziak
+1931", pos="15, 17.85!"];
+x18y18_90 [shape=square, color=blue, label="Siegfried Ganzler
+1924", pos="18, 18.9!"];
+x27y18_90 [shape=circle, color=pink, label="Erika Ganzler
+1924", pos="27, 18.9!"];
+x30y21_60 [shape=square, color=blue, label="Willi Andert
+1906", pos="30, 21.6!"];
+x42y21_75 [shape=circle, color=pink, label="Gertrud Andert
+1905", pos="42, 21.75!"];
+x45y21_60 [shape=square, color=blue, label="Adolf Wendt
+1906", pos="45, 21.6!"];
+x57y20_40 [shape=circle, color=pink, label="Gertrud Wendt
+1914", pos="57, 20.400002!"];
+x3y13_50 [shape=circle, color=pink, label="Carola Dabudziak
+1960", pos="3, 13.5!"];
+x6y13_50 [shape=square, color=blue, label="Jürgen Dabudziak
+1960", pos="6, 13.5!"];
+x9y13_50 [shape=square, color=blue, label="Thomas Dabudziak
+1960", pos="9, 13.5!"];
+x12y14_85 [shape=square, color=blue, label="Rainer Dabudziak
+1951", pos="12, 14.85!"];
+x21y14_40 [shape=circle, color=pink, label="Gabi Kosin
+1954", pos="21, 14.400001!"];
+x24y14_40 [shape=square, color=blue, label="Gerd Ganzler
+1954", pos="24, 14.400001!"];
+x33y17_25 [shape=square, color=blue, label="Siegfried Andert
+1935", pos="33, 17.25!"];
+x36y18_15 [shape=circle, color=pink, label="Edith Jungnickel
+1929", pos="36, 18.15!"];
+x39y16_50 [shape=square, color=blue, label="Rudi Andert
+1940", pos="39, 16.5!"];
+x48y15_30 [shape=circle, color=pink, label="Edith Andert
+1948", pos="48, 15.299999!"];
+x51y16_50 [shape=circle, color=pink, label="Inge Wendt
+1940", pos="51, 16.5!"];
+x54y16_50 [shape=square, color=blue, label="Adolf Wendt jr.
+1940", pos="54, 16.5!"];
+x15y10_95 [shape=square, color=blue, label="Mike Kosin
 1977", pos="15, 10.950001!"];
-x18y11_70 [shape=circle, color=pink, label="Jeanette Andert
-1972", pos="18, 11.699999!"];
-x6y7_20 [shape=square, color=blue, label="Paul Randy Andert
-2002", pos="6, 7.200001!"];
-x9y6_90 [shape=square, color=blue, label="Ben Rudi Andert
-2004", pos="9, 6.9000015!"];
+x18y11_55 [shape=square, color=blue, label="Randy Andert
+1973", pos="18, 11.549999!"];
+x42y10_95 [shape=circle, color=pink, label="Silvia Andert
+1977", pos="42, 10.950001!"];
+x45y11_70 [shape=circle, color=pink, label="Jeanette Andert
+1972", pos="45, 11.699999!"];
+x27y7_20 [shape=square, color=blue, label="Paul Andert
+2002", pos="27, 7.200001!"];
+x33y6_90 [shape=square, color=blue, label="Ben Andert
+2004", pos="33, 6.9000015!"];
 
 
-x0y13_05 [shape=circle,label="",height=0.01,width=0.01, pos="0, 13.049999!"];
-x3y13_05 [shape=circle,label="",height=0.01,width=0.01, pos="3, 13.049999!"];
-x6y13_05 [shape=circle,label="",height=0.01,width=0.01, pos="6, 13.049999!"];
-x9y13_05 [shape=circle,label="",height=0.01,width=0.01, pos="9, 13.049999!"];
-x0y14_85 -> x0y13_05 -> x3y13_05 -> x6y13_05 -> x9y13_05 -> x9y14_40;
-x3y13_05 -> x3y11_55;
-x6y13_05 -> x6y10_95;
-x12y13_65 [shape=circle,label="",height=0.01,width=0.01, pos="12, 13.65!"];
-x15y13_65 [shape=circle,label="",height=0.01,width=0.01, pos="15, 13.65!"];
-x18y13_65 [shape=circle,label="",height=0.01,width=0.01, pos="18, 13.65!"];
-x21y13_65 [shape=circle,label="",height=0.01,width=0.01, pos="21, 13.65!"];
-x12y16_50 -> x12y13_65 -> x15y13_65 -> x18y13_65 -> x21y13_65 -> x21y15_30;
-x15y13_65 -> x15y10_95;
-x18y13_65 -> x18y11_70;
-x3y9_15 [shape=circle,label="",height=0.01,width=0.01, pos="3, 9.15!"];
-x6y9_15 [shape=circle,label="",height=0.01,width=0.01, pos="6, 9.15!"];
-x9y9_15 [shape=circle,label="",height=0.01,width=0.01, pos="9, 9.15!"];
-x15y9_15 [shape=circle,label="",height=0.01,width=0.01, pos="15, 9.15!"];
-x3y11_55 -> x3y9_15 -> x6y9_15 -> x9y9_15 -> x15y9_15 -> x15y10_95;
-x6y9_15 -> x6y7_20;
-x9y9_15 -> x9y6_90;
+x54y22_65 [shape=circle,label="",height=0.01,width=0.01, pos="54, 22.65!"];
+x57y22_65 [shape=circle,label="",height=0.01,width=0.01, pos="57, 22.65!"];
+x60y22_65 [shape=circle,label="",height=0.01,width=0.01, pos="60, 22.65!"];
+x54y24_90 -> x54y22_65 -> x57y22_65 -> x60y22_65 -> x60y24_90;
+x57y22_65 -> x57y20_40;
+x0y16_35 [shape=circle,label="",height=0.01,width=0.01, pos="0, 16.349998!"];
+x3y16_35 [shape=circle,label="",height=0.01,width=0.01, pos="3, 16.349998!"];
+x6y16_35 [shape=circle,label="",height=0.01,width=0.01, pos="6, 16.349998!"];
+x9y16_35 [shape=circle,label="",height=0.01,width=0.01, pos="9, 16.349998!"];
+x12y16_35 [shape=circle,label="",height=0.01,width=0.01, pos="12, 16.349998!"];
+x15y16_35 [shape=circle,label="",height=0.01,width=0.01, pos="15, 16.349998!"];
+x0y18_00 -> x0y16_35 -> x3y16_35 -> x6y16_35 -> x9y16_35 -> x12y16_35 -> x15y16_35 -> x15y17_85;
+x3y16_35 -> x3y13_50;
+x6y16_35 -> x6y13_50;
+x9y16_35 -> x9y13_50;
+x12y16_35 -> x12y14_85;
+x18y16_65 [shape=circle,label="",height=0.01,width=0.01, pos="18, 16.650002!"];
+x21y16_65 [shape=circle,label="",height=0.01,width=0.01, pos="21, 16.650002!"];
+x24y16_65 [shape=circle,label="",height=0.01,width=0.01, pos="24, 16.650002!"];
+x27y16_65 [shape=circle,label="",height=0.01,width=0.01, pos="27, 16.650002!"];
+x18y18_90 -> x18y16_65 -> x21y16_65 -> x24y16_65 -> x27y16_65 -> x27y18_90;
+x21y16_65 -> x21y14_40;
+x24y16_65 -> x24y14_40;
+x30y19_95 [shape=circle,label="",height=0.01,width=0.01, pos="30, 19.95!"];
+x33y19_95 [shape=circle,label="",height=0.01,width=0.01, pos="33, 19.95!"];
+x36y19_95 [shape=circle,label="",height=0.01,width=0.01, pos="36, 19.95!"];
+x39y19_95 [shape=circle,label="",height=0.01,width=0.01, pos="39, 19.95!"];
+x42y19_95 [shape=circle,label="",height=0.01,width=0.01, pos="42, 19.95!"];
+x30y21_60 -> x30y19_95 -> x33y19_95 -> x36y19_95 -> x39y19_95 -> x42y19_95 -> x42y21_75;
+x33y19_95 -> x33y17_25;
+x36y19_95 -> x36y18_15;
+x39y19_95 -> x39y16_50;
+x45y18_45 [shape=circle,label="",height=0.01,width=0.01, pos="45, 18.45!"];
+x48y18_45 [shape=circle,label="",height=0.01,width=0.01, pos="48, 18.45!"];
+x51y18_45 [shape=circle,label="",height=0.01,width=0.01, pos="51, 18.45!"];
+x54y18_45 [shape=circle,label="",height=0.01,width=0.01, pos="54, 18.45!"];
+x57y18_45 [shape=circle,label="",height=0.01,width=0.01, pos="57, 18.45!"];
+x45y21_60 -> x45y18_45 -> x48y18_45 -> x51y18_45 -> x54y18_45 -> x57y18_45 -> x57y20_40;
+x48y18_45 -> x48y15_30;
+x51y18_45 -> x51y16_50;
+x54y18_45 -> x54y16_50;
+x12y13_05 [shape=circle,label="",height=0.01,width=0.01, pos="12, 13.049999!"];
+x15y13_05 [shape=circle,label="",height=0.01,width=0.01, pos="15, 13.049999!"];
+x18y13_05 [shape=circle,label="",height=0.01,width=0.01, pos="18, 13.049999!"];
+x21y13_05 [shape=circle,label="",height=0.01,width=0.01, pos="21, 13.049999!"];
+x12y14_85 -> x12y13_05 -> x15y13_05 -> x18y13_05 -> x21y13_05 -> x21y14_40;
+x15y13_05 -> x15y10_95;
+x18y13_05 -> x18y11_55;
+x39y13_50 [shape=circle,label="",height=0.01,width=0.01, pos="39, 13.5!"];
+x42y13_50 [shape=circle,label="",height=0.01,width=0.01, pos="42, 13.5!"];
+x45y13_50 [shape=circle,label="",height=0.01,width=0.01, pos="45, 13.5!"];
+x48y13_50 [shape=circle,label="",height=0.01,width=0.01, pos="48, 13.5!"];
+x39y16_50 -> x39y13_50 -> x42y13_50 -> x45y13_50 -> x48y13_50 -> x48y15_30;
+x42y13_50 -> x42y10_95;
+x45y13_50 -> x45y11_70;
+x18y9_15 [shape=circle,label="",height=0.01,width=0.01, pos="18, 9.15!"];
+x27y9_15 [shape=circle,label="",height=0.01,width=0.01, pos="27, 9.15!"];
+x33y9_15 [shape=circle,label="",height=0.01,width=0.01, pos="33, 9.15!"];
+x42y9_15 [shape=circle,label="",height=0.01,width=0.01, pos="42, 9.15!"];
+x18y11_55 -> x18y9_15 -> x27y9_15 -> x33y9_15 -> x42y9_15 -> x42y10_95;
+x27y9_15 -> x27y7_20;
+x33y9_15 -> x33y6_90;
 
 }
